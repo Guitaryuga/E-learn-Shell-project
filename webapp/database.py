@@ -1,4 +1,4 @@
-from webapp.model import db, Courses, Lessons, Lessons_To_Courses
+from webapp.model import db, Course, Lesson #User
 
 """
 Здесь описана база данных в виде питоновских словарей. Далее идут функции, которые вносят данные в db с помощью get_all_courses. 
@@ -24,29 +24,33 @@ lessons_to_courses = [{'course_id': '1', 'lesson_id':'1'}, {'course_id': '1', 'l
 
 def extracting_data():
     for check_course in courses:
-      course_id = check_course['course_id']
+      id = check_course['course_id']
       name = check_course['name']
-      save_courses(course_id, name)
+      save_courses(id, name)
     for check_lesson in lessons_1:
-      lesson_id = check_lesson['lesson_id']
+      id = check_lesson['lesson_id']
       lesson_name = check_lesson['lesson_name']
       material_type = check_lesson['material_type']
       material = check_lesson['material']
-      save_lessons(lesson_id, lesson_name, material_type, material)
-    for check in lessons_to_courses:
+      save_lessons(id, lesson_name, material_type, material)
+    for check_parent in lessons_to_courses: #нужно для классов parent и child писать отдельно цикл и функцию?
       course_id = check['course_id']
       lesson_id = check['lesson_id']
       save_check(course_id, lesson_id)
 
-def save_courses(course_id, name):
-  new_courses = Courses(course_id=course_id, name=name)
-  db.session.add(new_courses)
-  db.session.commit()
+def save_courses(id, name):
+  courses_exists = Course.query.filter(Course.name == name).count()
+  if not courses_exists:
+    new_courses = Course(id=id, name=name)
+    db.session.add(new_courses)
+    db.session.commit()
 
-def save_lessons(lesson_id, lesson_name, material_type, material):
-  new_lessons = Lessons(lesson_id=lesson_id, lesson_name=lesson_name, material_type=material_type, material=material)
-  db.session.add(new_lessons)
-  db.session.commit()
+def save_lessons(id, lesson_name, material_type, material):
+  lessons_exists = Lesson.query.filter(Lesson.lesson_name == lesson_name).count()
+  if not lessons_exists:
+    new_lessons = Lesson(id=id, lesson_name=lesson_name, material_type=material_type, material=material)
+    db.session.add(new_lessons)
+    db.session.commit()
 
 def save_check(course_id, lesson_id):
   new_check = Lessons_To_Courses(course_id=course_id, lesson_id=lesson_id)
