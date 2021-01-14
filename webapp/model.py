@@ -10,16 +10,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
-lessons_to_courses = db.Table('lessons_to_courses',                         
+lessons_to_courses = db.Table('lessons_to_courses',                       
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),        
-    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id'))        
+    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id'))       
     )
+
 
 class Course(db.Model):
     __tablename__ = 'Course'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    lessons = db.relationship("Lesson", secondary = lessons_to_courses)
+    lessons = db.relationship("Lesson", secondary=lessons_to_courses)
 
     def __repr__(self):
         return f'Курс {self.id} {self.name}'
@@ -36,21 +37,27 @@ class Lesson(db.Model):
         return f'Урок {self.id} {self.lesson_name}'
 
 
-# class Lessons_To_Courses(db.Model):
-#     course_id = db.Column(db.Integer, primary_key=True) # не Primary_key, a foreign_key
-#     lesson_id = db.Column(db.Integer, primary_key=True)
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    fio = db.Column(db.String(128))
+    password = db.Column(db.String(128))
+    company = db.Column(db.String(128))
+    position = db.Column(db.String(128))
+    date_of_birth = db.Column(db.String(50))
+    phone_number = db.Column(db.String(50))
+    role = db.Column(db.String(10), index=True)
 
-# class User(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(64), index=True, unique=True)
-#     password = db.Column(db.String(128))
-#     role = db.Column(db.String(10), index=True)
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
 
-#     def set_password(self, password):
-#         self.password = generate_password_hash(password)
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
     
-#     def check_password(self, password):
-#         return check_password_hash(self.password, password)
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
-#     def __repr__(self):
-#         return '<User {}>'.format(self.username)
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+        

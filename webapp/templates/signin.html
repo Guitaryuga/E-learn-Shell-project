@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <title>{{ page_title }}</title>
+  </head>
+  
+  <body class="text-center">
+    {% include 'menu.html' %}
+    <div class="container">
+        <div class="row">
+            <div class="col-3 mx-auto">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                {% endwith %} 
+            <form action="{{ url_for('process_login') }}" method="POST">
+                {{ form.hidden_tag() }}
+                <img class="img-fluid" src="/static/bg-logo1-ru.png" width="175" height="175">
+                <div class="form-group">
+                    {{ form.username() }}
+                </div>
+                <div class="form-group">
+                {{ form.password() }}
+                </div>
+                <div class="checkbox mb-3">
+                {{ form.remember_me() }}
+                {{ form.remember_me.label(class_='form-check-label') }}  
+                </div>
+                <p>{{ form.submit }}</p>
+                <p class="mt-5 mb-3 text-muted">&copy; 2017-2020</p>
+            </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Optional JavaScript -->
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+
+    
+  </body>
+</html>
