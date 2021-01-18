@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
 """
@@ -9,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 """
 
 db = SQLAlchemy()
+
 
 lessons_to_courses = db.Table('lessons_to_courses',                       
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),        
@@ -36,7 +36,7 @@ class Lesson(db.Model):
     def __repr__(self):
         return f'Урок {self.id} {self.lesson_name}'
 
-
+      
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -60,4 +60,3 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
-        
