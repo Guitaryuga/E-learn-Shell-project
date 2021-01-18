@@ -35,8 +35,62 @@
   </div>
 </div>
     <h1>Hello, world!</h1>
-    <h2>{{ text_sample }}</h2>
-    <h3>{{ another_sample }}</h3>
+    <h2>{{ test_sample }}</h2>
+    <h3>{{ test_sample2 }}</h3>
+    <h4>{{ test_sample3 }}</h4>
+  <form action="/test2" method='POST'>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <input class="form-check-input me-1" type="checkbox" name='a[]' value="1" aria-label="...">
+        Cras justo odio
+      </li>
+      <li class="list-group-item">
+        <input class="form-check-input me-1" type="checkbox" name='a[]' value="2" aria-label="...">
+        Dapibus ac facilisis in
+      </li>
+      <li class="list-group-item">
+        <input class="form-check-input me-1" type="checkbox" name='c' value="3" aria-label="...">
+        Morbi leo risus
+      </li>
+      <li class="list-group-item">
+        <input class="form-check-input me-1" type="checkbox" name='d' value="4" aria-label="...">
+        Porta ac consectetur ac
+      </li>
+      <li class="list-group-item">
+        <input class="form-check-input me-1" type="checkbox" name='e' value="5" aria-label="...">
+        Vestibulum at eros
+      </li>
+      <li>
+        <button type="submit"> Отправить</button>
+      </li>
+    </ul>
+  </form>
+  <div class="row">
+    <div class="col-3 mx-auto">
+      <ul class="list-group">
+        <!-- <li class="list-group-item">
+          <input class="form-check-input me-1" type="checkbox" name='a' value="1" aria-label="...">
+          Cras justo odio
+        </li>
+        <li class="list-group-item">
+          <input class="form-check-input me-1" type="checkbox" name='b' value="2" aria-label="...">
+          Dapibus ac facilisis in
+        </li>
+        <li class="list-group-item">
+          <input class="form-check-input me-1" type="checkbox" name='c' value="3" aria-label="...">
+          Morbi leo risus
+        </li>
+        <li class="list-group-item">
+          <input class="form-check-input me-1" type="checkbox" name='d' value="4" aria-label="...">
+          Porta ac consectetur ac
+        </li>
+        <li class="list-group-item">
+          <input class="form-check-input me-1" type="checkbox" name='e' value="5" aria-label="...">
+          Vestibulum at eros
+        </li> -->
+      </ul>
+    </div>
+  </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>

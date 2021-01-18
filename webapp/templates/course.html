@@ -45,7 +45,7 @@
   <ul class="navbar-nav px-3">
     <form class='d-flex'>
       <a class="nav-link px-2" href="{{url_for('index')}}">На главную</a>
-      <a class="nav-link px-2" href="#">Личный кабинет</a>
+      <a class="nav-link px-2" href="{{url_for('user', username = current_user.username)}}">Профиль</a>
       <a class="nav-link px-2" href="{{url_for('logout')}}">Выйти</a>
     </form>
   </ul>

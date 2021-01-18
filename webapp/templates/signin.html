@@ -15,18 +15,20 @@
   <body class="text-center">
     {% include 'menu.html' %}
     <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-float" style="position: absolute; top: 0; left: 625px; right: 100px; z-index: 9999;width: 35%">
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %} 
         <div class="row">
             <div class="col-3 mx-auto">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {% for message in messages %}
-                            {{ message }}
-                        {% endfor %}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% endif %}
-                {% endwith %} 
             <form action="{{ url_for('process_login') }}" method="POST">
                 {{ form.hidden_tag() }}
                 <img class="img-fluid" src="/static/bg-logo1-ru.png" width="175" height="175">
@@ -48,9 +50,17 @@
     </div>
 
 
-    <!-- Optional JavaScript -->
+    <!-- JavaScript -->
 
     <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"> </script> 
+    <script type="text/javascript"> 
+        setTimeout(function () { 
+  
+            // Closing the alert 
+            $('.alert').alert('close'); 
+        }, 2000); 
+    </script> 
 
     
   </body>
