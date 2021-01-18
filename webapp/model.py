@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.ext.declarative import declarative_base
 from flask_login import UserMixin
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 """
@@ -8,16 +8,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 """
 
 db = SQLAlchemy()
-Base = declarative_base() # без указания Base выдает ошибку 
+
+
+lessons_to_courses = db.Table('lessons_to_courses',                       
+    db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),        
+    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id'))       
+    )
+
 
 class Course(db.Model):
+    __tablename__ = 'Course'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    lessons = db.relationship("Lesson", secondary=lessons_to_courses)
 
     def __repr__(self):
         return f'Курс {self.id} {self.name}'
 
+
 class Lesson(db.Model):
+    __tablename__ = 'Lesson'
     id = db.Column(db.Integer, primary_key=True)
     lesson_name = db.Column(db.String, nullable=False)
     material_type = db.Column(db.String, nullable=False)
@@ -26,35 +36,27 @@ class Lesson(db.Model):
     def __repr__(self):
         return f'Урок {self.id} {self.lesson_name}'
 
-association_table = db.Table('lessons_to_courses', Base.metadata,  #не совсем уверен в использовании db.,
-    db.Column('course_id', db.Integer,db.ForeignKey('Course.id')),  #так как без него линтер подчеркивает все красным
-    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id'))   #возможно стоит использовать больше импортов
-    )
-
-class Parent(Base):
-    __tablename__ = 'Course'
+      
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    children = db.relationship("Child", secondary=association_table)
+    username = db.Column(db.String(64), index=True, unique=True)
+    fio = db.Column(db.String(128))
+    password = db.Column(db.String(128))
+    company = db.Column(db.String(128))
+    position = db.Column(db.String(128))
+    date_of_birth = db.Column(db.String(50))
+    phone_number = db.Column(db.String(50))
+    role = db.Column(db.String(10), index=True)
 
-class Child(Base):
-    __tablename__ = 'Lesson'
-    id = db.Column(db.Integer, primary_key=True)
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
 
-# class Lessons_To_Courses(db.Model):
-#     course_id = db.Column(db.Integer, primary_key=True) # не Primary_key, a foreign_key
-#     lesson_id = db.Column(db.Integer, primary_key=True)
-
-# class User(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(64), index=True, unique=True)
-#     password = db.Column(db.String(128))
-#     role = db.Column(db.String(10), index=True)
-
-#     def set_password(self, password):
-#         self.password = generate_password_hash(password)
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
     
-#     def check_password(self, password):
-#         return check_password_hash(self.password, password)
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
-#     def __repr__(self):
-#         return '<User {}>'.format(self.username)
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
