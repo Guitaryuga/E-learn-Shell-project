@@ -2,8 +2,8 @@ from flask import Flask, render_template, url_for, flash, redirect, session, req
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_migrate import Migrate
 
-from webapp.model import db, Course, Lesson, lessons_to_courses, users_to_courses, User
-from webapp.forms import LoginForm, RegistrationForm
+from webapp.model import db, Course, Lesson, lessons_to_courses, Question, Answer, User, users_to_courses, User_answer
+from webapp.forms import LoginForm, RegistrationForm, QuestionForm
 from webapp.decorators import admin_required
 
 def create_app():
@@ -23,13 +23,18 @@ def create_app():
     @app.route("/")
     def index():
         if current_user.is_authenticated:
-            course_1 = Course.query.get(1)
+            course_1 = Course.query.get(1) # Исправить как массив
             course_2 = Course.query.get(2)
             course_3 = Course.query.get(3)
             course_4 = Course.query.get(4)
+            # courses = [
+            #     {'course': Course.get(1), 'description': '...'},
+
+            # ]
             user_courses = current_user.courses
             title = "Список курсов"
-            return render_template('index.html', page_title=title, course_1=course_1, course_2=course_2, course_3=course_3, course_4=course_4, user_courses=user_courses)
+            return render_template('index.html', page_title=title, user_courses=user_courses,
+                                    course_1=course_1, course_2=course_2, course_3=course_3, course_4=course_4)
         else:
             title = "Список курсов"
             return render_template('index.html', page_title=title)
@@ -49,24 +54,56 @@ def create_app():
 
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
     def test():
-        course = current_user
-        title = course.id
-        test_sample = Course.query.get(1)
-        test_sample2 = current_user.courses
-        if test_sample in test_sample2:
-            test_sample3 = "Confirmed"
-        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2, test_sample3=test_sample3)
+        test_sample = Question.query.get(1)
+        test_sample2 = test_sample.answers
+        return render_template('test_template.html', test_sample=test_sample,
+                                test_sample2=test_sample2)
 
-    @app.route("/test2", methods=['POST']) 
-    def process_test():
-        print(request.form)
+  
+    @app.route("/answerchecking/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
+    def process_test(question_id):
+        try:
+            answer_data = request.form.to_dict()
+            answer_value = answer_data['answer']
+            correct_question = Question.query.get(question_id)
+            correct_answer = correct_question.correctanswer
+            if correct_answer == answer_value:
+                flash('Вы дали верный ответ', 'success')
+                answer_status = "correct"
+                answer = User_answer(user_id=current_user.id, question_id=question_id, user_answer=answer_value, answer_status=answer_status)
+                db.session.add(answer)
+                db.session.commit()
+            else:
+                flash("Ответ неверный", "danger")
+            return redirect(request.referrer)
+        except KeyError:
+            flash('Необходимо выбрать вариант ответа', 'danger')
+            return redirect(request.referrer)
+
+
+    @app.route("/handwritechecking/<question_id>", methods=['POST'])  # проверка правильности написанного ответа
+    def process_writing(question_id):
+        form = QuestionForm()
+        answer_value = form.answer.data
+        correct_question = Question.query.get(question_id)
+        correct_answer = correct_question.correctanswer
+        if correct_answer == answer_value:
+            flash('Вы дали верный ответ', 'success')
+            answer_status = "correct"
+            answer = User_answer(user_id=current_user.id, question_id=question_id, user_answer=answer_value, answer_status=answer_status)
+            db.session.add(answer)
+            db.session.commit()
+        else:
+            flash("Ответ неверный", "danger")
         return redirect('/test')
+
 
     @app.route("/admin")
     @admin_required
     def admin_index():
         title = "Панель управления"
-        return render_template('admin.html', page_title=title)
+        profiles = User.query.all()
+        return render_template('admin.html', page_title=title, profiles=profiles)
 
     @app.route("/course/<course_id>") #путь к курсам
     def course(course_id):
@@ -79,20 +116,16 @@ def create_app():
             flash('Вам необходимо зарегистрироваться или войти', 'danger')
             return redirect(url_for('index'))
         
-    @app.route("/lesson/<lesson_id>") # путь к урокам в курсах
-    def lesson(lesson_id):
+    @app.route("/course/<course_id>/lesson/<lesson_id>") # путь к урокам в курсах
+    def lesson(course_id, lesson_id):
+        form = QuestionForm()
         lesson = Lesson.query.get(lesson_id)
-        course_id = session.get('course_id', None) 
-        course = Course.query.get(course_id) 
-        title = lesson.lesson_name
-        if lesson.material_type == 'text':
-            return render_template('text_lesson.html', page_title=title, lesson_title=title, material=lesson.material, lesson_list=course.lessons)
-        elif lesson.material_type == 'image':
-            return render_template('image_lesson.html', page_title=title, lesson_title=title, material=lesson.material, lesson_list=course.lessons)
-        elif lesson.material_type == 'video':
-            return render_template('video_lesson.html', page_title=title, lesson_title=title, material=lesson.material, lesson_list=course.lessons)
-        elif lesson.material_type == 'pdf':
-            return render_template('pdf_lesson.html',  page_title=title, lesson_title=title, material=lesson.material, lesson_list=course.lessons)
+        course = Course.query.get(course_id)
+        question = Question.query.get(lesson_id)
+        user_answer = User_answer.query.get(current_user.id) 
+        return render_template('lesson.html', course_id=course_id, page_title=lesson.lesson_name, lesson_title=lesson.lesson_name, question_title=question.question_text, 
+                                    material=lesson.material, lesson_list=course.lessons, answer_list=question.answers, user_answer=user_answer, question_id=question.id,
+                                    question_type=question.question_type, form=form, material_type=lesson.material_type, slides=lesson.slides)
 
     @app.route("/login")
     def login():
@@ -126,7 +159,7 @@ def create_app():
     @app.route("/logout")
     def logout():
         logout_user()
-        flash('Вы вышли из учетной записи', 'success' )
+        flash('Вы вышли из учетной записи', 'success')
         return redirect(url_for("index"))
 
     @app.route("/register")

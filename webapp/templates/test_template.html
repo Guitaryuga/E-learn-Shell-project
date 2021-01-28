@@ -34,63 +34,36 @@
     </div>
   </div>
 </div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert-float" style="position: absolute; top: 0; left: 625px; right: 100px; z-index: 9999;width: 35%">
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+             {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %} 
     <h1>Hello, world!</h1>
     <h2>{{ test_sample }}</h2>
     <h3>{{ test_sample2 }}</h3>
     <h4>{{ test_sample3 }}</h4>
-  <form action="/test2" method='POST'>
-    <ul class="list-group">
-      <li class="list-group-item">
-        <input class="form-check-input me-1" type="checkbox" name='a[]' value="1" aria-label="...">
-        Cras justo odio
-      </li>
-      <li class="list-group-item">
-        <input class="form-check-input me-1" type="checkbox" name='a[]' value="2" aria-label="...">
-        Dapibus ac facilisis in
-      </li>
-      <li class="list-group-item">
-        <input class="form-check-input me-1" type="checkbox" name='c' value="3" aria-label="...">
-        Morbi leo risus
-      </li>
-      <li class="list-group-item">
-        <input class="form-check-input me-1" type="checkbox" name='d' value="4" aria-label="...">
-        Porta ac consectetur ac
-      </li>
-      <li class="list-group-item">
-        <input class="form-check-input me-1" type="checkbox" name='e' value="5" aria-label="...">
-        Vestibulum at eros
-      </li>
-      <li>
-        <button type="submit"> Отправить</button>
-      </li>
-    </ul>
-  </form>
-  <div class="row">
-    <div class="col-3 mx-auto">
-      <ul class="list-group">
-        <!-- <li class="list-group-item">
-          <input class="form-check-input me-1" type="checkbox" name='a' value="1" aria-label="...">
-          Cras justo odio
-        </li>
-        <li class="list-group-item">
-          <input class="form-check-input me-1" type="checkbox" name='b' value="2" aria-label="...">
-          Dapibus ac facilisis in
-        </li>
-        <li class="list-group-item">
-          <input class="form-check-input me-1" type="checkbox" name='c' value="3" aria-label="...">
-          Morbi leo risus
-        </li>
-        <li class="list-group-item">
-          <input class="form-check-input me-1" type="checkbox" name='d' value="4" aria-label="...">
-          Porta ac consectetur ac
-        </li>
-        <li class="list-group-item">
-          <input class="form-check-input me-1" type="checkbox" name='e' value="5" aria-label="...">
-          Vestibulum at eros
-        </li> -->
-      </ul>
+    <h4>{{ test_sample4 }}</h4>
+  <!-- <form action="/answerchecking" method='POST'>
+    <div class="list-group">
+      {% for answer in test_sample3 %}
+      <label class="list-group-item">
+        <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-label="...">
+          {{ answer.answer_text }}
+      </label> 
+        {% endfor %}
+       <li>
+        <button type="submit"> Отправить </button>
+       </li>
     </div>
-  </div>
+  </form> -->
 
     <!-- Optional JavaScript; choose one of the two! -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>

@@ -1,4 +1,4 @@
-from webapp.model import db, Course, Lesson, lessons_to_courses
+from webapp.model import db, Course, Lesson, Question, Answer, lessons_to_courses, Slide
 
 """
 Здесь описана база данных в виде питоновских словарей. Далее идут функции, которые вносят данные в db с помощью get_all_courses. 
@@ -10,18 +10,44 @@ courses = [{'course_id': 1, 'name': 'Курс №5'},
            {'course_id': 3, 'name': 'Курс №1'}, 
            {'course_id': 4, 'name': 'Курс №2'}]
 
-lessons_1 = [{'lesson_id': 1, 'lesson_name': 'Вступление', 'material_type': 'text', 'material': 'Проявления опасности веществ при их перевозках воздушным транспортом'},
-             {'lesson_id': 2, 'lesson_name': 'Введение', 'material_type': 'video', 'material': 'https://www.youtube.com/embed/UBX8MWYel3s'},
-             {'lesson_id': 3, 'lesson_name': 'Общие принципы', 'material_type': 'image', 'material': 'https://utv.ru/media/screen_image/a3d190f180f813e507663ab102a239a1800x450.jpg'},
-             {'lesson_id': 4, 'lesson_name': 'Правовая основа', 'material_type': 'text', 'material': 'Text_sample'},
-             {'lesson_id': 5, 'lesson_name': 'Что представляют собой опасные грузы?', 'material_type': 'text', 'material': 'Text_sample'},
-             {'lesson_id': 6, 'lesson_name': 'Общие принципы классификации опасных грузов', 'material_type': 'pdf', 'material': '/static/pdf/posobie_1.pdf'}
+lessons_1 = [{'lesson_id': 1, 'lesson_name': 'Вступление', 'material_type': 'noslides', 'material': 'Проявления опасности веществ при их перевозках воздушным транспортом'},
+             {'lesson_id': 2, 'lesson_name': 'Введение', 'material_type': 'noslides', 'material': 'https://www.youtube.com/embed/UBX8MWYel3s', 'question_type': 'open'},
+             {'lesson_id': 3, 'lesson_name': 'Общие принципы', 'material_type': 'slides', 'material': 'slides'},
+             {'lesson_id': 4, 'lesson_name': 'Правовая основа', 'material_type': 'noslides', 'material': 'Text_sample'},
+             {'lesson_id': 5, 'lesson_name': 'Что представляют собой опасные грузы?', 'material_type': 'noslides', 'material': 'Text_sample'},
+             {'lesson_id': 6, 'lesson_name': 'Общие принципы классификации опасных грузов', 'material_type': 'noslides', 'material': '/static/pdf/posobie_1.pdf'}
            ]
 
-lessons_to_courses = {1: [1, 2, 3, 4, 5, 6], 
+slides = [{'slide_id': 1, 'lesson_id': 3, 'link': '/static/slides/1.jpg'}, {'slide_id': 2, 'lesson_id': 3, 'link': '/static/slides/2.jpg'}, 
+          {'slide_id': 3, 'lesson_id': 3, 'link': '/static/slides/3.jpg'}]
+
+lessons_to_courses_data = {1: [1, 2, 3, 4, 5, 6], 
                       2: [1, 2, 3],
                       3: [3, 4],
                       4: [1, 2]}
+
+questions = [{'question_id': 1, 'question_text': 'Test question', 'lesson_id': 1, 'correctanswer': 'This thing', 'question_type': 'closed'}, 
+             {'question_id': 2, 'question_text': 'Test question #2', 'lesson_id': 2, 'correctanswer': 'Test', 'question_type': 'open'},
+             {'question_id': 3, 'question_text': 'Test question #3', 'lesson_id': 3, 'correctanswer': 'Yes', 'question_type': 'closed'},
+             {'question_id': 4, 'question_text': 'Test question #4', 'lesson_id': 4, 'correctanswer': 'Memes!', 'question_type': 'closed'},
+             {'question_id': 5, 'question_text': 'Test question #5', 'lesson_id': 5, 'correctanswer': 'Testing', 'question_type': 'closed'},
+             {'question_id': 6, 'question_text': 'Test question #6', 'lesson_id': 6, 'correctanswer': 'Nope', 'question_type': 'open'}]
+
+answers = [{'answer_id': 1, 'question_id': 1, 'answer_text': 'This thing'}, 
+           {'answer_id': 2, 'question_id': 1, 'answer_text': 'That thing'}, 
+           {'answer_id': 3, 'question_id': 1, 'answer_text': 'Other thing'}, 
+           {'answer_id': 4, 'question_id': 1, 'answer_text': 'Another thing'}, 
+           {'answer_id': 5, 'question_id': 3, 'answer_text': 'Seriously?'}, 
+           {'answer_id': 6, 'question_id': 3, 'answer_text': 'Yes'},
+           {'answer_id': 7, 'question_id': 4, 'answer_text': 'Memes?'},
+           {'answer_id': 8, 'question_id': 4, 'answer_text': 'Memes...'},
+           {'answer_id': 9, 'question_id': 4, 'answer_text': 'Memes!'},
+           {'answer_id': 10, 'question_id': 5, 'answer_text': 'Testin'},
+           {'answer_id': 11, 'question_id': 5, 'answer_text': 'Toastin'},
+           {'answer_id': 12, 'question_id': 5, 'answer_text': 'Testing'},
+           {'answer_id': 13, 'question_id': 5, 'answer_text': 'Tstng'}
+           ]
+
 
 
 def extracting_data():
@@ -37,14 +63,40 @@ def extracting_data():
     name = check_course['name']
     save_courses(course_id, name)
 
+  for check_answer in answers:
+    answer_id = check_answer['answer_id']
+    question_id = check_answer['question_id']
+    answer_text = check_answer['answer_text']
+    save_answers(answer_id, question_id, answer_text)
+
+  for check_question in questions:
+    question_id = check_question['question_id']
+    question_text = check_question['question_text']
+    lesson_id = check_question['lesson_id']
+    correctanswer = check_question['correctanswer']
+    question_type = check_question['question_type']
+    save_questions(question_id, question_text, lesson_id, correctanswer, question_type)
+
+  for check_slide in slides:
+    slide_id = check_slide['slide_id']
+    lesson_id = check_slide['lesson_id']
+    link = check_slide['link']
+    save_slides(slide_id, lesson_id, link)
+  
 
 def save_courses(id, name):
   courses_exists = Course.query.filter(Course.name == name).count()
   if not courses_exists:
     new_course = Course(id=id, name=name)
-    new_course.lessons = [Lesson.query.get(x) for x in lessons_to_courses[id]]
+    new_course.lessons = [Lesson.query.get(x) for x in lessons_to_courses_data[id]]
     db.session.add(new_course)
     db.session.commit()
+    for course_id, lesson_ids in lessons_to_courses_data.items():
+      for order, lesson_id in enumerate(lesson_ids, 1):
+        stmt = lessons_to_courses.update().\
+          where((lessons_to_courses.c.lesson_id == lesson_id) & (lessons_to_courses.c.course_id  == course_id)).\
+          values(order = order)
+        db.session.execute(stmt)
 
 
 def save_lessons(id, lesson_name, material_type, material):
@@ -52,4 +104,28 @@ def save_lessons(id, lesson_name, material_type, material):
   if not lessons_exists:
     new_lessons = Lesson(id=id, lesson_name=lesson_name, material_type=material_type, material=material)
     db.session.add(new_lessons)
+    db.session.commit()
+
+
+def save_answers(id, question_id, answer_text):
+  answers_exists = Answer.query.filter(Answer.answer_text == answer_text).count()
+  if not answers_exists:
+    new_answers = Answer(id=id, question_id=question_id, answer_text=answer_text)
+    db.session.add(new_answers)
+    db.session.commit()
+
+
+def save_questions(id, question_text, lesson_id, correctanswer, question_type):
+  questions_exists = Question.query.filter(Question.question_text == question_text).count()
+  if not questions_exists:
+    new_question = Question(id=id, question_text=question_text, lesson_id=lesson_id, correctanswer=correctanswer, question_type=question_type)
+    db.session.add(new_question)
+    db.session.commit()
+
+
+def save_slides(id, lesson_id, link):
+  slides_exists = Slide.query.filter(Slide.link == link).count()
+  if not slides_exists:
+    new_slide = Slide(id=id, lesson_id=lesson_id, link=link)
+    db.session.add(new_slide)
     db.session.commit()
