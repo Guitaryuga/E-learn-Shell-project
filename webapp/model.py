@@ -12,8 +12,11 @@ db = SQLAlchemy()
 
 lessons_to_courses = db.Table('lessons_to_courses',                       
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),        
-    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id'))       
-    )
+    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id')))
+
+users_to_courses = db.Table('users_to_courses',
+    db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('User.id')))
 
 
 class Course(db.Model):
@@ -38,6 +41,7 @@ class Lesson(db.Model):
 
       
 class User(db.Model, UserMixin):
+    __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     fio = db.Column(db.String(128))
@@ -47,6 +51,7 @@ class User(db.Model, UserMixin):
     date_of_birth = db.Column(db.String(50))
     phone_number = db.Column(db.String(50))
     role = db.Column(db.String(10), index=True)
+    courses = db.relationship("Course", secondary=users_to_courses)
 
     @property
     def is_admin(self):

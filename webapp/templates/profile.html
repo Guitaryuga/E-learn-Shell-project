@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>{{ page_title }}</title>
+  </head>
+  <body>
+    {% include 'menu.html' %}
+        <div class="row">
+            <div class="col-md-5">
+              <h1>Информация о пользователе</h1>
+                <ul class="list-group">
+                    <li class="list-group-item">E-mail: {{ current_user.username }}</li>
+                    <li class="list-group-item">Ф.И.О: {{ current_user.fio }}</li>
+                    <li class="list-group-item">Компания: {{ current_user.company }}</li>
+                    <li class="list-group-item">Должность: {{ current_user.position }}</li>
+                    <li class="list-group-item">Дата рождения: {{ current_user.date_of_birth }}</li>
+                    <li class="list-group-item">Номер телефона: {{ current_user.phone_number }}</li>
+                </ul>
+            </div>
+            
+            <div class="col-md-5 col-md-offset-2">
+              <h1>Доступные курсы</h1>
+              <div class="list-group">
+                  {% for course_name in courses %}
+                  <a href="{{url_for('course', course_id = course_name.id)}}" class="list-group-item list-group-item-action ">{{ course_name.name }}</a>
+                  {% endfor %}
+              </div>
+          </div>
+        </div>
+    
+   
+    <!-- Optional JavaScript -->
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

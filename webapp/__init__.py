@@ -1,8 +1,8 @@
-from flask import Flask, render_template, url_for, flash, redirect, session
+from flask import Flask, render_template, url_for, flash, redirect, session, request
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_migrate import Migrate
 
-from webapp.model import db, Course, Lesson, lessons_to_courses, User 
+from webapp.model import db, Course, Lesson, lessons_to_courses, users_to_courses, User
 from webapp.forms import LoginForm, RegistrationForm
 from webapp.decorators import admin_required
 
@@ -22,14 +22,45 @@ def create_app():
 
     @app.route("/")
     def index():
-        title = "Список курсов"
-        return render_template('index.html', page_title=title)
+        if current_user.is_authenticated:
+            course_1 = Course.query.get(1)
+            course_2 = Course.query.get(2)
+            course_3 = Course.query.get(3)
+            course_4 = Course.query.get(4)
+            user_courses = current_user.courses
+            title = "Список курсов"
+            return render_template('index.html', page_title=title, course_1=course_1, course_2=course_2, course_3=course_3, course_4=course_4, user_courses=user_courses)
+        else:
+            title = "Список курсов"
+            return render_template('index.html', page_title=title)
+
+
+    @app.route("/confirmation", methods=['POST'])  # процесс подтверждения записи на курс
+    def process_confirm():
+        page_data = request.form.to_dict()
+        course_id = page_data['course_id']
+        course = Course.query.get(course_id)
+        user = current_user
+        user.courses.append(course)
+        db.session.add(user)
+        db.session.commit()
+        flash('Вы успешно поступили на курс!', 'success')
+        return redirect('/')
 
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
-    def dash():
-        course = Course.query.get(1)
+    def test():
+        course = current_user
         title = course.id
-        return render_template('test_template.html')
+        test_sample = Course.query.get(1)
+        test_sample2 = current_user.courses
+        if test_sample in test_sample2:
+            test_sample3 = "Confirmed"
+        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2, test_sample3=test_sample3)
+
+    @app.route("/test2", methods=['POST']) 
+    def process_test():
+        print(request.form)
+        return redirect('/test')
 
     @app.route("/admin")
     @admin_required
@@ -37,7 +68,7 @@ def create_app():
         title = "Панель управления"
         return render_template('admin.html', page_title=title)
 
-    @app.route("/course/<course_id>")
+    @app.route("/course/<course_id>") #путь к курсам
     def course(course_id):
         if current_user.is_authenticated:
             course = Course.query.get(course_id)
@@ -45,10 +76,10 @@ def create_app():
             session['course_id'] = course_id
             return render_template('course.html', page_title=title, course_id=course_id, lesson_list=course.lessons)
         else:
-            flash('Вам необходимо зарегистрироваться или войти')
+            flash('Вам необходимо зарегистрироваться или войти', 'danger')
             return redirect(url_for('index'))
         
-    @app.route("/lesson/<lesson_id>")
+    @app.route("/lesson/<lesson_id>") # путь к урокам в курсах
     def lesson(lesson_id):
         lesson = Lesson.query.get(lesson_id)
         course_id = session.get('course_id', None) 
@@ -79,15 +110,23 @@ def create_app():
             if user and user.check_password(form.password.data):
                 login_user(user, remember=form.remember_me.data)
                 login_user(user)
-                flash('Вы вошли на сайт')
+                flash('Вы вошли на сайт', 'success')
                 return redirect(url_for("index"))               
-        flash('Неправильное имя пользователя или пароль')
+        flash('Неверное имя пользователя или пароль', 'danger')
         return redirect(url_for("login")) 
-     
+
+    @app.route("/user/<username>")
+    @login_required
+    def user(username):
+        profile = User.query.get(current_user.id)
+        courses = profile.courses
+        title = "Профиль"
+        return render_template('profile.html', page_title=title, courses=courses)
+        
     @app.route("/logout")
     def logout():
         logout_user()
-        flash('Вы вышли из учетной записи')
+        flash('Вы вышли из учетной записи', 'success' )
         return redirect(url_for("index"))
 
     @app.route("/register")
@@ -108,14 +147,14 @@ def create_app():
             new_user.set_password(form.password.data)
             db.session.add(new_user)
             db.session.commit()
-            flash('Вы успешно зарегистрировались!')
+            flash('Вы успешно зарегистрировались!', 'success')
             return redirect(url_for('login'))
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     flash('Ошибка в поле "{}": - {}'.format(getattr(form, field).label.text, error))
             return redirect(url_for('register'))
-        flash('Пожалуйста, исправьте ошибки в форме')
+        flash('Пожалуйста, исправьте ошибки в форме', 'danger')
         return redirect(url_for('register'))
 
     return app
