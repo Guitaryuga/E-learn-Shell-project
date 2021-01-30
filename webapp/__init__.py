@@ -1,16 +1,19 @@
 from flask import Flask, render_template, url_for, flash, redirect, session, request
+from flask_ngrok import run_with_ngrok
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_migrate import Migrate
 
 from webapp.model import db, Course, Lesson, lessons_to_courses, Question, Answer, User, users_to_courses, User_answer
 from webapp.forms import LoginForm, RegistrationForm, QuestionForm
 from webapp.decorators import admin_required
+from webapp.referrer_functions import get_redirect_target
 
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
     migrate = Migrate(app, db)
+    run_with_ngrok(app)
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -54,10 +57,12 @@ def create_app():
 
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
     def test():
-        test_sample = Question.query.get(1)
-        test_sample2 = test_sample.answers
-        return render_template('test_template.html', test_sample=test_sample,
-                                test_sample2=test_sample2)
+        question = Question.query.get(1)
+        test_sample = User_answer.query.filter(User_answer.user_id == current_user.id).all()
+        test_sample2 = []
+        for test in test_sample:
+            test_sample2.append(test.question_id)
+        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2)
 
   
     @app.route("/answerchecking/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
@@ -78,7 +83,7 @@ def create_app():
             return redirect(request.referrer)
         except KeyError:
             flash('Необходимо выбрать вариант ответа', 'danger')
-            return redirect(request.referrer)
+            return redirect(get_redirect_target())
 
 
     @app.route("/handwritechecking/<question_id>", methods=['POST'])  # проверка правильности написанного ответа
@@ -95,7 +100,7 @@ def create_app():
             db.session.commit()
         else:
             flash("Ответ неверный", "danger")
-        return redirect('/test')
+        return redirect(get_redirect_target())
 
 
     @app.route("/admin")
@@ -122,10 +127,10 @@ def create_app():
         lesson = Lesson.query.get(lesson_id)
         course = Course.query.get(course_id)
         question = Question.query.get(lesson_id)
-        user_answer = User_answer.query.get(current_user.id) 
+        answer_check = User_answer.query.filter(User_answer.user_id == current_user.id, User_answer.question_id == question.id).all()
         return render_template('lesson.html', course_id=course_id, page_title=lesson.lesson_name, lesson_title=lesson.lesson_name, question_title=question.question_text, 
-                                    material=lesson.material, lesson_list=course.lessons, answer_list=question.answers, user_answer=user_answer, question_id=question.id,
-                                    question_type=question.question_type, form=form, material_type=lesson.material_type, slides=lesson.slides)
+                                    material=lesson.material, lesson_list=course.lessons, answer_list=question.answers, answer_check=answer_check, question_id=question.id,
+                                    question_type=question.question_type, form=form, material_type=lesson.material_type, slides=lesson.slides, correctanswer=question.correctanswer)
 
     @app.route("/login")
     def login():
@@ -153,8 +158,12 @@ def create_app():
     def user(username):
         profile = User.query.get(current_user.id)
         courses = profile.courses
+        user_progress = User_answer.query.filter(User_answer.user_id == current_user.id).all()
+        answered_questions = []
+        for lessons in user_progress:
+            answered_questions.append(lessons.question_id)
         title = "Профиль"
-        return render_template('profile.html', page_title=title, courses=courses)
+        return render_template('profile.html', page_title=title, courses=courses, user_progress=user_progress, answered_questions=answered_questions)
         
     @app.route("/logout")
     def logout():

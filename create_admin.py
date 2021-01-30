@@ -23,4 +23,4 @@ with app.app_context():
 
     db.session.add(new_user)
     db.session.commit()
-    print('Создан пользователь с id {} added'.format(new_user.id))
+    print('Создан администратор с id {}'.format(new_user.id))

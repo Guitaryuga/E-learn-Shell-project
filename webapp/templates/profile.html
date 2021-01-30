@@ -12,28 +12,75 @@
   </head>
   <body>
     {% include 'menu.html' %}
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Данные пользователя</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Прогресс по курсам</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
         <div class="row">
-            <div class="col-md-5">
-              <h1>Информация о пользователе</h1>
-                <ul class="list-group">
-                    <li class="list-group-item">E-mail: {{ current_user.username }}</li>
-                    <li class="list-group-item">Ф.И.О: {{ current_user.fio }}</li>
-                    <li class="list-group-item">Компания: {{ current_user.company }}</li>
-                    <li class="list-group-item">Должность: {{ current_user.position }}</li>
-                    <li class="list-group-item">Дата рождения: {{ current_user.date_of_birth }}</li>
-                    <li class="list-group-item">Номер телефона: {{ current_user.phone_number }}</li>
-                </ul>
+          <div class="col-md-5">
+            <h1>Информация о пользователе</h1>
+              <ul class="list-group">
+                  <li class="list-group-item">E-mail: {{ current_user.username }}</li>
+                  <li class="list-group-item">Ф.И.О: {{ current_user.fio }}</li>
+                  <li class="list-group-item">Компания: {{ current_user.company }}</li>
+                  <li class="list-group-item">Должность: {{ current_user.position }}</li>
+                  <li class="list-group-item">Дата рождения: {{ current_user.date_of_birth }}</li>
+                  <li class="list-group-item">Номер телефона: {{ current_user.phone_number }}</li>
+              </ul>
+          </div>
+          <div class="col-md-5 col-md-offset-2">
+            <h1>Доступные курсы</h1>
+            <div class="list-group">
+                {% for course_name in courses %}
+                <a href="{{url_for('course', course_id = course_name.id)}}" class="list-group-item list-group-item-action ">{{ course_name.name }}</a>
+                {% endfor %}
             </div>
-            
-            <div class="col-md-5 col-md-offset-2">
-              <h1>Доступные курсы</h1>
-              <div class="list-group">
-                  {% for course_name in courses %}
-                  <a href="{{url_for('course', course_id = course_name.id)}}" class="list-group-item list-group-item-action ">{{ course_name.name }}</a>
+        </div>
+      </div>
+      </div>
+      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="row">
+          <div class="col-md-5">
+              {% for course_name in courses %}
+              <h2>{{ course_name.name }}</h2>
+              <ul class="list-group list-group-flush">
+                {% for lesson_name in course_name.lessons %}
+                      <li class="list-group-item"><h5>Урок {{ lesson_name.id }} {{ lesson_name.lesson_name }}</h5></li>
+                {% endfor %}
+              {% endfor %}
+              </ul>
+            </div>
+            <div class='col-md-5'>
+              <ul class="list-group list-group-flush">
+                {% for course_name in courses %}
+                <h2>Статус</h2>
+                  {% for lesson_name in course_name.lessons %}
+                      {% if lesson_name.id in answered_questions %}
+                        <li class="list-group-item"><h5><span class="text-success">Пройден</span></h5></li>
+                      {% else %}
+                      <li class="list-group-item"><h5><span class='text-danger'>Не пройден</span></h5></li>
+                      {% endif %}
                   {% endfor %}
-              </div>
+                {% endfor %}    
+            </ul>   
+            </div>
           </div>
         </div>
+      </div>
+    
+          
+
+          
+          
+      
+    
+  
     
    
     <!-- Optional JavaScript -->

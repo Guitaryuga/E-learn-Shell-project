@@ -60,7 +60,6 @@ class Question(db.Model):
     lesson_id = db.Column(db.Integer, db.ForeignKey('Lesson.id', ondelete='CASCADE'), index=True)
     question_type = db.Column(db.String(50))
     lessons = db.relationship('Lesson', backref='questions')
-    # answers = db.relationship('Answer', secondary=variants_to_questions)
 
     def __repr__(self):
         return f'Вопрос {self.id} {self.question_text}'
