@@ -11,7 +11,7 @@ courses = [{'course_id': 1, 'name': 'Курс №5'},
            {'course_id': 4, 'name': 'Курс №2'}]
 
 lessons_1 = [{'lesson_id': 1, 'lesson_name': 'Вступление', 'material_type': 'noslides', 'material': 'Проявления опасности веществ при их перевозках воздушным транспортом'},
-             {'lesson_id': 2, 'lesson_name': 'Введение', 'material_type': 'noslides', 'material': 'https://www.youtube.com/embed/UBX8MWYel3s', 'question_type': 'open'},
+             {'lesson_id': 2, 'lesson_name': 'Введение', 'material_type': 'noslides', 'material': 'https://www.youtube.com/embed/UBX8MWYel3s'},
              {'lesson_id': 3, 'lesson_name': 'Общие принципы', 'material_type': 'slides', 'material': 'slides'},
              {'lesson_id': 4, 'lesson_name': 'Правовая основа', 'material_type': 'noslides', 'material': 'Text_sample'},
              {'lesson_id': 5, 'lesson_name': 'Что представляют собой опасные грузы?', 'material_type': 'noslides', 'material': 'Text_sample'},
@@ -52,80 +52,63 @@ answers = [{'answer_id': 1, 'question_id': 1, 'answer_text': 'This thing'},
 
 def extracting_data():
   for check_lesson in lessons_1:
-    lesson_id = check_lesson['lesson_id']
-    lesson_name = check_lesson['lesson_name']
-    material_type = check_lesson['material_type']
-    material = check_lesson['material']
-    save_lessons(lesson_id, lesson_name, material_type, material)
+    save_lessons(**check_lesson)
   
   for check_course in courses:
-    course_id = check_course['course_id']
-    name = check_course['name']
-    save_courses(course_id, name)
+    save_courses(**check_course)
 
   for check_answer in answers:
-    answer_id = check_answer['answer_id']
-    question_id = check_answer['question_id']
-    answer_text = check_answer['answer_text']
-    save_answers(answer_id, question_id, answer_text)
+    save_answers(**check_answer)
 
   for check_question in questions:
-    question_id = check_question['question_id']
-    question_text = check_question['question_text']
-    lesson_id = check_question['lesson_id']
-    correctanswer = check_question['correctanswer']
-    question_type = check_question['question_type']
-    save_questions(question_id, question_text, lesson_id, correctanswer, question_type)
+    save_questions(**check_question)
 
   for check_slide in slides:
-    slide_id = check_slide['slide_id']
-    lesson_id = check_slide['lesson_id']
-    link = check_slide['link']
-    save_slides(slide_id, lesson_id, link)
+    save_slides(**check_slide)
   
 
-def save_courses(id, name):
+def save_courses(course_id, name):
   courses_exists = Course.query.filter(Course.name == name).count()
   if not courses_exists:
-    new_course = Course(id=id, name=name)
-    new_course.lessons = [Lesson.query.get(x) for x in lessons_to_courses_data[id]]
+    new_course = Course(id=course_id, name=name)
+    new_course.lessons = [Lesson.query.get(x) for x in lessons_to_courses_data[course_id]]
     db.session.add(new_course)
     db.session.commit()
     for course_id, lesson_ids in lessons_to_courses_data.items():
       for order, lesson_id in enumerate(lesson_ids, 1):
         stmt = lessons_to_courses.update().\
           where((lessons_to_courses.c.lesson_id == lesson_id) & (lessons_to_courses.c.course_id  == course_id)).\
-          values(order = order)
+          values(order=order)
         db.session.execute(stmt)
 
 
-def save_lessons(id, lesson_name, material_type, material):
+def save_lessons(lesson_id, lesson_name, material_type, material):
   lessons_exists = Lesson.query.filter(Lesson.lesson_name == lesson_name).count()
   if not lessons_exists:
-    new_lessons = Lesson(id=id, lesson_name=lesson_name, material_type=material_type, material=material)
+    new_lessons = Lesson(id=lesson_id, lesson_name=lesson_name, material_type=material_type, material=material)
     db.session.add(new_lessons)
     db.session.commit()
 
 
-def save_answers(id, question_id, answer_text):
+def save_answers(answer_id, question_id, answer_text):
   answers_exists = Answer.query.filter(Answer.answer_text == answer_text).count()
   if not answers_exists:
-    new_answers = Answer(id=id, question_id=question_id, answer_text=answer_text)
+    new_answers = Answer(id=answer_id, question_id=question_id, answer_text=answer_text)
     db.session.add(new_answers)
     db.session.commit()
 
 
-def save_questions(id, question_text, lesson_id, correctanswer, question_type):
+def save_questions(question_id, question_text, lesson_id, correctanswer, question_type):
   questions_exists = Question.query.filter(Question.question_text == question_text).count()
   if not questions_exists:
-    new_question = Question(id=id, question_text=question_text, lesson_id=lesson_id, correctanswer=correctanswer, question_type=question_type)
+    new_question = Question(id=question_id, question_text=question_text, lesson_id=lesson_id, correctanswer=correctanswer, question_type=question_type)
     db.session.add(new_question)
     db.session.commit()
 
 
-def save_slides(id, lesson_id, link):
+def save_slides(slide_id, lesson_id, link):
   slides_exists = Slide.query.filter(Slide.link == link).count()
   if not slides_exists:
-    new_slide = Slide(id=id, lesson_id=lesson_id, link=link)
+    new_slide = Slide(id=slide_id, lesson_id=lesson_id, link=link)
     db.session.add(new_slide)
     db.session.commit()

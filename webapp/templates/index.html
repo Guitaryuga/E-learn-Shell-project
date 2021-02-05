@@ -12,8 +12,8 @@
   </head>
   <body>
     <!-- Modal block -->
-    <!-- Modal #1 -->
-    <div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {% for modal in all_courses %}
+    <div class="modal fade" id="Modal{{ modal.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -21,85 +21,25 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Вы уверены, что хотите записаться на курс №5?
+            Вы уверены, что хотите записаться на {{ modal.name }}?
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
               <form action="/confirmation" method='POST'>
-                <button class='btn btn-primary' name="course_id" value="1" type="submit">Поступить на курс</button>
+                <button class='btn btn-primary' name="course_id" value="{{ modal.id }}" type="submit">Поступить на курс</button>
               </form>
           </div>
         </div>
       </div>
     </div>
-    <!-- Modal #2 -->
-    <div class="modal fade" id="Modal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Подтверждение записи на курс</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Вы уверены, что хотите записаться на курс №5 кпп?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-              <form action="/confirmation" method='POST'>
-                <button class='btn btn-primary' name="course_id" value="2" type="submit">Поступить на курс</button>
-              </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Modal #3 -->
-    <div class="modal fade" id="Modal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Подтверждение записи на курс</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Вы уверены, что хотите записаться на курс №1?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-              <form action="/confirmation" method='POST'>
-                <button class='btn btn-primary' name="course_id" value="3" type="submit">Поступить на курс</button>
-              </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Modal #4 -->
-    <div class="modal fade" id="Modal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Подтверждение записи на курс</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Вы уверены, что хотите записаться на курс №2?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-              <form action="/confirmation" method='POST'>
-                <button class='btn btn-primary' name="course_id" value="4" type="submit">Поступить на курс</button>
-              </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
     <!-- End of Modal block -->
-
 {% include 'menu.html' %}
 <main class="container">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
-        <div class="alert-float" style="position: absolute; top: 60px; left: 980px; right: 100px; z-index: 9999;width: 35%">
+        <div class="alert-float" style="position: fixed; top: 60px; left: 75%; right: 0">
           <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
              {{ message }}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -110,111 +50,35 @@
   {% endwith %} 
   <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">Список курсов</h1>
-    <p class="lead">Выберите подходящий вам курс для изучения. После оплаты курс будет всегда вам доступен из личного кабинета.</p>
+    <p class="lead">Выберите подходящий курс для изучения. После оплаты курс будет всегда вам доступен из вашего профиля.</p>
   </div>
   <div class="row">
+      {% for info in all_courses %}
       <div class="col">
-        <div class="card shadow-sm" style="width: 18rem;">
+        <div class="card shadow-sm" style="height: 33rem; width: 18rem;">
             <div class="card-header text-center">
-                <h4 class="my-0 fw-normal">Курс №5</h4>
+                <h4 class="my-0 fw-normal">{{ info.name }}</h4>
               </div>
             <div class="card-body d-flex flex-column">
-              <h2 class="card-title text-center"> $Цена <small class="text-muted"></small></h2>
+              <h2 class="card-title text-center"> {{ info.conditions }} <small class="text-muted"></small></h2>
               <ul class="list-unstyled mt-3 mb-4 text-center">
                 <li>
-                  <strong>Первоначальная</strong> подготовка по учебным программам повышения квалификации,
-                  утвержденным ФАВТ (РОСАВИАЦИЯ) Минтранса РФ и по программе <span class="text-primary"><strong>IATA DGR</strong></span> для
-                  персонала категорий 1, 2, 3, 6 с выдачей <span class="text-primary"><strong>зарегистрированного сертификата
-                    ИАТА международного образца</strong></span> и <span class="text-danger"><strong>удостоверения о повышении
-                    квалификации государственного образца.</strong></span>
+                {% autoescape false %}
+                    {{ info.info }}
+                {% endautoescape %}
                 </li>
               </ul>
-              {% if current_user.is_authenticated and course_1 in user_courses %}
+              {% if current_user.is_authenticated and info in user_courses %}
               <button type="button" class="btn btn-secondary btn-lg mt-auto" disabled>Курс приобретен</button>
               {% elif current_user.is_authenticated %}
-              <button type="button" class="w-100 btn btn-lg btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#Modal1">Поступить на курс</button>
+              <button type="button" class="w-100 btn btn-lg btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#Modal{{ info.id }}">Поступить на курс</button>
               {% else %}
-              <a class="w-100 btn btn-lg btn-primary mt-auto" href='{{url_for("course", course_id = "1")}}' role="button" >Поступить на курс</a>
+              <a class="w-100 btn btn-lg btn-primary mt-auto" href='{{url_for("course", course_id = info.id)}}' role="button" >Поступить на курс</a>
               {% endif %}
             </div>
           </div>   
       </div>
-      <div class="col">
-        <div class="card shadow-sm" style="width: 18rem;">
-            <div class="card-header text-center">
-                <h4 class="my-0 fw-normal">Курс №5 кпп</h4>
-              </div>
-            <div class="card-body d-flex flex-column">
-              <h2 class="card-title text-center"> $Цена <small class="text-muted"></small></h2>
-              <ul class="list-unstyled mt-3 mb-4 text-center">
-                <li>
-                    <strong>Периодическая</strong> подготовка по учебным программам повышения квалификации,
-                    утвержденным ФАВТ (РОСАВИАЦИЯ) Минтранса РФ и по программе <span class="text-primary"><strong>IATA DGR</strong></span> для
-                    персонала категорий 1, 2, 3, 6 с выдачей <span class="text-primary"><strong>зарегистрированного сертификата
-                    ИАТА международного образца</strong></span> и <span class="text-danger"><strong>удостоверения о повышении
-                    квалификации государственного образца.</strong></span>
-                </li>
-              </ul>
-              {% if current_user.is_authenticated and course_2 in user_courses %}
-              <button type="button" class="btn btn-secondary btn-lg mt-auto" disabled>Курс приобретен</button>
-              {% elif current_user.is_authenticated %}
-              <button type="button" class="w-100 btn btn-lg btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#Modal2">Поступить на курс</button>
-              {% else %}
-              <a class="w-100 btn btn-lg btn-primary mt-auto" href='{{url_for("course", course_id = "2")}}' role="button" >Поступить на курс</a>
-              {% endif %}
-            </div>
-          </div>   
-      </div>
-      <div class="col">
-        <div class="card h-100 shadow-sm" style="width: 18rem;">
-            <div class="card-header text-center">
-                <h4 class="my-0 fw-normal">Курс №1</h4>
-              </div>
-            <div class="card-body d-flex flex-column">
-              <h2 class="card-title text-center"> $Цена <small class="text-muted"></small></h2>
-              <ul class="list-unstyled mt-3 mb-4 text-center">
-                <li>
-                    Подготовка по учебным программам повышения квалификации, утвержденным ФАВТ
-                    (Росавиация) Минтранса РФ, для персонала категорий 1, 2, 3, 6 (ТИ ИКАО), с
-                    выдачей <span class="text-danger"><strong>удостоверения о повышении квалификации государственного
-                        образца.</strong></span>
-                </li>
-              </ul>
-              {% if current_user.is_authenticated and course_3 in user_courses %}
-              <button type="button" class="btn btn-secondary btn-lg mt-auto" disabled>Курс приобретен</button>
-              {% elif current_user.is_authenticated %}
-              <button type="button" class="w-100 btn btn-lg btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#Modal3">Поступить на курс</button>
-              {% else %}
-              <a class="w-100 btn btn-lg btn-primary mt-auto" href='{{url_for("course", course_id = "3")}}' role="button" >Поступить на курс</a>
-              {% endif %}
-            </div>
-          </div>
-      </div>
-      <div class="col">
-        <div class="card h-100 shadow-sm" style="width: 18rem;">
-            <div class="card-header text-center">
-                <h4 class="my-0 fw-normal">Курс №2</h4>
-              </div>
-            <div class="card-body d-flex flex-column">
-              <h2 class="card-title text-center"> $Цена <small class="text-muted"></small></h2>
-              <ul class="list-unstyled mt-3 mb-4 text-center">
-                <li>
-                    Подготовка по учебным программам, утвержденным ФАВТ (Росавиация) Минтранса
-                    РФ, для персонала категорий 4, 5, 7, 8, 9, 12, 13, 14, 15 (ТИ ИКАО), с выдачей
-                    <span class="text-danger"><strong>удостоверения о повышении квалификации государственного
-                        образца.</strong></span>
-                </li>
-              </ul>
-              {% if current_user.is_authenticated and course_4 in user_courses %}
-              <button type="button" class="btn btn-secondary btn-lg mt-auto" disabled>Курс приобретен</button>
-              {% elif current_user.is_authenticated %}
-              <button type="button" class="w-100 btn btn-lg btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#Modal4">Поступить на курс</button>
-              {% else %}
-              <a class="w-100 btn btn-lg btn-primary mt-auto" href='{{url_for("course", course_id = "4")}}' role="button" >Поступить на курс</a>
-              {% endif %}
-            </div>
-          </div>
-      </div>
+      {% endfor %}
   </div>
   <footer class="pt-4 my-md-5 pt-md-5 border-top">
     <div class="row">

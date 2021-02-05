@@ -52,7 +52,50 @@
     <h4>{{ test_sample3 }}</h4>
     <h4>{{ test_sample4 }}</h4>
 
+    <div class="m-3">
+      <ul class="nav nav-tabs" id="myTab">
+          <li class="nav-item">
+              <a href="#sectionA" class="nav-link active" data-toggle="tab">Section A</a>
+          </li>
+          <li class="nav-item">
+              <a href="#sectionB" class="nav-link" data-toggle="tab">Section B</a>
+          </li>
+          <li class="nav-item">
+              <a href="#sectionC" class="nav-link" data-toggle="tab">Section C</a>
+          </li>
+      </ul>
+      <div class="tab-content">
+          <div id="sectionA" class="tab-pane fade show active" role="tabpanel">
+              <h3>Section A</h3>
+              <p>Aliquip placeat salvia cillum iphone...</p>
+          </div>
+          <div id="sectionB" class="tab-pane fade" role="tabpanel">
+              <h3>Section B</h3>
+              <p>Vestibulum nec erat eu nulla rhoncus fringilla...</p>
+          </div>
+          <div id="sectionC" class="tab-pane fade" role="tabpanel">
+              <h3>Section C</h3>
+              <p>Nullam hendrerit justo non leo aliquet...</p>
+          </div>
+      </div>
+  </div>    
+
     <!-- Optional JavaScript; choose one of the two! -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>
+
+<script src="js/jquery-3.5.1.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab){
+        $('#myTab a[href="' + activeTab + '"]').tab('show');
+    }
+});
+</script>
+    </script>
   </body>
 </html>

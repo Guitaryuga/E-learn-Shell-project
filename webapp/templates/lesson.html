@@ -2,87 +2,15 @@
 
 
 {% block content %}
-{% if material_type == 'slides' %}
-<div class='d-flex text-center'>
-<div id="carouselExampleIndicators" class="carousel slide text-center" data-bs-ride="carousel">
-    <ol class="carousel-indicators">
-      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></li>
-      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
-      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
-      <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></li>
-    </ol>
-    <div class="carousel-inner">
-      <div class="carousel-item active" style="width: 1200px; height: 100%">
-        <img src="/static/slides/1.jpg" class="d-block mx-auto" style="width: 100%" alt="">
-      </div>
-      {% for slide in slides %}
-      <div class="carousel-item" style="width: 1200px; height: 100%">
-        <img src="{{ slide.link }}" class="d-block mx-auto" style="width: 100%" alt="...">
-      </div>
-      {% endfor %}
-    </div>
-    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </a>
-  </div>
-</div>
+{% if lesson.material_type == 'slides' %}
+  {% include 'carousel_slides.html' %}
 {% endif %}
 {% autoescape false %}
-{{ material }}
+  {{ lesson.material }}
 {% endautoescape %}
-{% if question_type == 'closed' %}
-<form action="{{url_for('process_test', question_id = question_id)}}" method='POST'>
-  <div class="row">
-      <div class="col-4">
-      <div class="list-group mt-2">
-          <h5>{{ question_title }}</h5>
-          {% for answer in answer_list %}
-          {% if not answer_check == [] %}
-          <label class="list-group-item disabled">
-              <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-disabled="true">
-              {{ answer.answer_text }}
-          </label>
-          {% else %}
-          <label class="list-group-item">
-              <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-label="...">
-              {{ answer.answer_text }}
-          </label>
-              {% endif %} 
-              {% endfor %}
-          </div>
-          </div>
-          </div>
-          {% if not answer_check == [] %}
-          <span class="text-success"><strong>Правильный ответ: {{ correctanswer }}</strong></span>
-          <li style='list-style: none'><button type="button" class="btn btn-success mt-2" disabled>Ответить</button></li>
-          {% else %}
-          <li style='list-style: none'><button class="btn btn-primary mt-2" type="submit"> Ответить </button></li>
-          {% endif %}
-      </form>
+{% if question.question_type == 'closed' %}
+  {% include 'closed_question.html' %}
 {% else %}
-<div class="row">
-    <div class="col-4">
-        <h4>{{ question_title }}</h4>
-            <form action="{{ url_for('process_writing', question_id = question_id) }}" method='POST'>
-            {{ form.hidden_tag() }}
-            {% if not answer_check == [] %}
-            <div class="form-group">
-                <input class="form-control" id="disabledInput" type="text" placeholder="Правильный ответ: {{ correctanswer }}" disabled>
-            </div>
-            <li style='list-style: none'><button type="button" class="btn btn-success mt-2" disabled>Ответить</button></li>
-            {% else %}
-            <div class="form-group">
-              {{ form.answer }}
-            </div>
-            <p>{{ form.submit }}</p>
-            {% endif %}
-            </form>
-    </div>
-</div>
+  {% include 'open_question.html' %}
 {% endif %}
 {% endblock %}

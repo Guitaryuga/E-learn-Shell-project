@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-4">
+        <h4>{{ question.question_text }}</h4>
+            <form action="{{ url_for('process_writing', question_id = question.id) }}" method='POST'>
+                {{ form.hidden_tag() }}
+                {% if not checked == [] %}
+                <div class="form-group">
+                    <input class="form-control" id="disabledInput" type="text" placeholder="Правильный ответ: {{ question.correctanswer }}" disabled>
+                </div>
+                <li style='list-style: none'><button type="button" class="btn btn-success mt-2" disabled>Ответить</button></li>
+                {% else %}
+                <div class="form-group">
+                {{ form.answer }}
+                </div>
+                <p>{{ form.submit }}</p>
+                {% endif %}
+            </form>
+    </div>
+</div>

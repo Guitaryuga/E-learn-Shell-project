@@ -1,19 +1,17 @@
-from flask import Flask, render_template, url_for, flash, redirect, session, request
-from flask_ngrok import run_with_ngrok
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_login import current_user, LoginManager, login_required, login_user, logout_user
 from flask_migrate import Migrate
 
-from webapp.model import db, Course, Lesson, lessons_to_courses, Question, Answer, User, users_to_courses, User_answer
-from webapp.forms import LoginForm, RegistrationForm, QuestionForm
+from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer
+from webapp.forms import LoginForm, QuestionForm, RegistrationForm, UserForm
 from webapp.decorators import admin_required
-from webapp.referrer_functions import get_redirect_target
+from webapp.functions import checking_answer, get_redirect_target
 
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
     migrate = Migrate(app, db)
-    run_with_ngrok(app)
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -25,23 +23,15 @@ def create_app():
 
     @app.route("/")
     def index():
+        all_courses = Course.query.all()
+        title = "Список курсов"
         if current_user.is_authenticated:
-            course_1 = Course.query.get(1) # Исправить как массив
-            course_2 = Course.query.get(2)
-            course_3 = Course.query.get(3)
-            course_4 = Course.query.get(4)
-            # courses = [
-            #     {'course': Course.get(1), 'description': '...'},
-
-            # ]
             user_courses = current_user.courses
-            title = "Список курсов"
-            return render_template('index.html', page_title=title, user_courses=user_courses,
-                                    course_1=course_1, course_2=course_2, course_3=course_3, course_4=course_4)
+            return render_template('index.html', page_title=title, user_courses=user_courses, all_courses=all_courses)
         else:
             title = "Список курсов"
-            return render_template('index.html', page_title=title)
-
+            return render_template('index.html', page_title=title, all_courses=all_courses)
+            
 
     @app.route("/confirmation", methods=['POST'])  # процесс подтверждения записи на курс
     def process_confirm():
@@ -57,14 +47,10 @@ def create_app():
 
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
     def test():
-        question = Question.query.get(1)
-        test_sample = User_answer.query.filter(User_answer.user_id == current_user.id).all()
-        test_sample2 = []
-        for test in test_sample:
-            test_sample2.append(test.question_id)
+        test_sample = User.query.filter(User.fio == 'Поляков Петр').all()
+        test_sample2 = Lesson.query.get(1)
         return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2)
 
-  
     @app.route("/answerchecking/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
     def process_test(question_id):
         try:
@@ -72,19 +58,11 @@ def create_app():
             answer_value = answer_data['answer']
             correct_question = Question.query.get(question_id)
             correct_answer = correct_question.correctanswer
-            if correct_answer == answer_value:
-                flash('Вы дали верный ответ', 'success')
-                answer_status = "correct"
-                answer = User_answer(user_id=current_user.id, question_id=question_id, user_answer=answer_value, answer_status=answer_status)
-                db.session.add(answer)
-                db.session.commit()
-            else:
-                flash("Ответ неверный", "danger")
-            return redirect(request.referrer)
+            checking_answer(correct_answer, answer_value, question_id)
+            return redirect(get_redirect_target())
         except KeyError:
             flash('Необходимо выбрать вариант ответа', 'danger')
             return redirect(get_redirect_target())
-
 
     @app.route("/handwritechecking/<question_id>", methods=['POST'])  # проверка правильности написанного ответа
     def process_writing(question_id):
@@ -92,32 +70,47 @@ def create_app():
         answer_value = form.answer.data
         correct_question = Question.query.get(question_id)
         correct_answer = correct_question.correctanswer
-        if correct_answer == answer_value:
-            flash('Вы дали верный ответ', 'success')
-            answer_status = "correct"
-            answer = User_answer(user_id=current_user.id, question_id=question_id, user_answer=answer_value, answer_status=answer_status)
-            db.session.add(answer)
-            db.session.commit()
-        else:
-            flash("Ответ неверный", "danger")
+        checking_answer(correct_answer, answer_value, question_id)
         return redirect(get_redirect_target())
 
-
-    @app.route("/admin")
+    @app.route("/admin", methods=['GET', 'POST']) # попытка сделать небольшую админку, чтобы можно было как-то отслеживать пользователей
     @admin_required
     def admin_index():
         title = "Панель управления"
+        form = UserForm()
+        user = form.user_name.data
         profiles = User.query.all()
-        return render_template('admin.html', page_title=title, profiles=profiles)
+        try:
+            if user:
+                correct_user = User.query.filter(User.fio == user).all()
+                for info in correct_user:
+                    user_id = info.id
+                particular_user = User.query.get(user_id)
+                courses = particular_user.courses
+                user_progress = User_answer.query.filter(User_answer.user_id == user_id).all()
+                answered_questions = []
+                for lessons in user_progress:
+                    answered_questions.append(lessons.question_id)
+                return render_template('admin.html', page_title=title, profiles=profiles, form=form, 
+                                        answered_questions=answered_questions, courses=courses, user_progress=user_progress, user=user)
+        except UnboundLocalError:
+            flash('Неверный формат данных', 'danger')
+            return redirect(get_redirect_target())
+        return render_template('admin.html', page_title=title, profiles=profiles, form=form)
+
+    @app.route("/checkinguser", methods=['POST'])
+    def process_user():
+        form = UserForm()
+        user = form.user_id.data
+        
+        return redirect(get_redirect_target())
 
     @app.route("/course/<course_id>") #путь к курсам
     def course(course_id):
         if current_user.is_authenticated:
             course = Course.query.get(course_id)
-            title = course.name
-            session['course_id'] = course_id
-            return render_template('course.html', page_title=title, course_id=course_id, lesson_list=course.lessons)
-        else:
+            return render_template('course.html', course=course, course_id=course_id, page_title=course.name, lesson=lesson) # lesson=lesson - заглушка, course/<course_id> должен выдавать
+        else:                                                                                                                 # кртакое содержание или инфу по курсу, "Содержание" сделать кликабельным
             flash('Вам необходимо зарегистрироваться или войти', 'danger')
             return redirect(url_for('index'))
         
@@ -127,10 +120,8 @@ def create_app():
         lesson = Lesson.query.get(lesson_id)
         course = Course.query.get(course_id)
         question = Question.query.get(lesson_id)
-        answer_check = User_answer.query.filter(User_answer.user_id == current_user.id, User_answer.question_id == question.id).all()
-        return render_template('lesson.html', course_id=course_id, page_title=lesson.lesson_name, lesson_title=lesson.lesson_name, question_title=question.question_text, 
-                                    material=lesson.material, lesson_list=course.lessons, answer_list=question.answers, answer_check=answer_check, question_id=question.id,
-                                    question_type=question.question_type, form=form, material_type=lesson.material_type, slides=lesson.slides, correctanswer=question.correctanswer)
+        checked = User_answer.query.filter(User_answer.user_id == current_user.id, User_answer.question_id == question.id).all()
+        return render_template('lesson.html', checked=checked, course=course, course_id=course_id, form=form, lesson=lesson, page_title=lesson.lesson_name, question=question)
 
     @app.route("/login")
     def login():
@@ -138,7 +129,7 @@ def create_app():
             return redirect(url_for("index"))
         title = "Авторизация"
         login_form = LoginForm()
-        return render_template('signin.html', page_title=title, form=login_form) 
+        return render_template('signin.html', form=login_form, page_title=title) 
 
     @app.route("/process-login", methods=['POST'])
     def process_login():
@@ -163,7 +154,7 @@ def create_app():
         for lessons in user_progress:
             answered_questions.append(lessons.question_id)
         title = "Профиль"
-        return render_template('profile.html', page_title=title, courses=courses, user_progress=user_progress, answered_questions=answered_questions)
+        return render_template('profile.html', answered_questions=answered_questions, courses=courses, page_title=title, user_progress=user_progress)
         
     @app.route("/logout")
     def logout():
@@ -177,7 +168,7 @@ def create_app():
             return redirect(url_for('index'))
         title = "Регистрация пользователя"
         form = RegistrationForm()
-        return render_template('registration.html', page_title=title, form=form)
+        return render_template('registration.html', form=form, page_title=title)
 
     @app.route("/process-reg", methods=['POST'])
     def process_reg():
