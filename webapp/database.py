@@ -1,5 +1,6 @@
 from webapp.model import db, Course, Lesson, Question, Answer, lessons_to_courses, Slide
 
+
 """
 Здесь описана база данных в виде питоновских словарей. Далее идут функции, которые вносят данные в db с помощью get_all_courses. 
 """
