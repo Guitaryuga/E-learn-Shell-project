@@ -1,0 +1,16 @@
+{% extends "course.html" %}
+
+
+{% block content %}
+{% if lesson.material_type == 'slides' %}
+  {% include 'carousel_slides.html' %}
+{% endif %}
+{% autoescape false %}
+  {{ lesson.material }}
+{% endautoescape %}
+{% if question.question_type == 'closed' %}
+  {% include 'closed_question.html' %}
+{% else %}
+  {% include 'open_question.html' %}
+{% endif %}
+{% endblock %}
