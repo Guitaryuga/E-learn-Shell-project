@@ -51,7 +51,7 @@
               <h2>{{ course_name.name }}</h2>
               <ul class="list-group list-group-flush">
                 {% for lesson_name in course_name.lessons %}
-                      <li class="list-group-item"><h5>Урок {{ lesson_name.id }} {{ lesson_name.lesson_name }}</h5></li>
+                      <li class="list-group-item"><h5>Урок {{ lesson_name.id }} {{ lesson_name.name }}</h5></li>
                 {% endfor %}
               {% endfor %}
               </ul>
