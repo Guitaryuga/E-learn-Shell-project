@@ -4,7 +4,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, LoginManager, login_required, login_user, logout_user
 from flask_migrate import Migrate
 
-from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer, Answer
+from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer, AnswerVariant
 from webapp.forms import LoginForm, QuestionForm, RegistrationForm, UserForm
 from webapp.decorators import admin_required
 from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView
@@ -22,7 +22,7 @@ def create_app():
     admin.add_view(ModelView(Lesson, db.session))
     admin.add_view(ModelView(User_answer, db.session))
     admin.add_view(ModelView(Question, db.session))
-    admin.add_view(ModelView(Answer, db.session))
+    admin.add_view(ModelView(AnswerVariant, db.session))
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -58,14 +58,10 @@ def create_app():
 
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
     def test():
-        test_sample = User.query.filter(User.fio == 'Поляков Петр').all()
-        test_sample2 = [1, 2, 3]
+        test_sample = Question.query.get(1)
+        test_sample2 = test_sample.answervariants
         test_sample3 = 1
-        if test_sample3 in test_sample2:
-            test_sample4 = 'correct'
-        else:
-            test_sample4 = 'wrong'
-        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2, test_sample3=test_sample3, test_sample4=test_sample4)
+        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2, test_sample3=test_sample3)
 
     @app.route("/answerchecking/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
     def process_test(question_id):
@@ -94,7 +90,7 @@ def create_app():
     def course(course_id):
         if current_user.is_authenticated:
             course = Course.query.get(course_id)
-            return render_template('course.html', course=course, course_id=course_id, page_title=course.name, lesson=lesson) # lesson=lesson - заглушка, course/<course_id> должен выдавать
+            return render_template('course.html', course=course, course_id=course_id, page_title=course.name, lesson=course, contents=course.content) # lesson=lesson - заглушка, course/<course_id> должен выдавать
         else:                                                                                                                 # кртакое содержание или инфу по курсу, "Содержание" сделать кликабельным
             flash('Вам необходимо зарегистрироваться или войти', 'danger')
             return redirect(url_for('index'))
@@ -106,7 +102,7 @@ def create_app():
         course = Course.query.get(course_id)
         question = Question.query.get(lesson_id)
         checked = User_answer.query.filter(User_answer.user_id == current_user.id, User_answer.question_id == question.id).all()
-        return render_template('lesson.html', checked=checked, course=course, course_id=course_id, form=form, lesson=lesson, page_title=lesson.lesson_name, question=question)
+        return render_template('lesson.html', checked=checked, course=course, course_id=course_id, form=form, lesson=lesson, page_title=lesson.name, question=question)
 
     @app.route("/login")
     def login():

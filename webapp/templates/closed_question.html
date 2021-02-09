@@ -3,7 +3,7 @@
         <div class="col-4">
             <div class="list-group mt-2">
                 <h5>{{ question.question_text }}</h5>
-                {% for answer in question.answers %}
+                {% for answer in question.answervariants %}
                 {% if not checked == [] %}
                 <label class="list-group-item disabled">
                     <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-disabled="true">

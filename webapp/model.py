@@ -18,6 +18,14 @@ lessons_to_courses = db.Table('lessons_to_courses',
 users_to_courses = db.Table('users_to_courses',
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('User.id')))
+
+questions_to_lessons = db.Table('questions_to_lessons', 
+    db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id')),
+    db.Column('question_id', db.Integer, db.ForeignKey('Question.id')))
+
+answervariants_to_questions = db.Table('answervariants_to_questions',
+    db.Column('question_id', db.Integer, db.ForeignKey('Question.id')),
+    db.Column('answervariant_id', db.Integer, db.ForeignKey('AnswerVariant.id')))
     
 
 class Course(db.Model):
@@ -27,6 +35,7 @@ class Course(db.Model):
     lessons = db.relationship("Lesson", secondary=lessons_to_courses)
     info = db.Column(db.Text, nullable=True)
     conditions = db.Column(db.String(64))
+    content = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f'Курс {self.id} {self.name}'
@@ -35,12 +44,14 @@ class Course(db.Model):
 class Lesson(db.Model):
     __tablename__ = 'Lesson'
     id = db.Column(db.Integer, primary_key=True)
-    lesson_name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
     material_type = db.Column(db.String, nullable=False)    
     material = db.Column(db.Text, nullable=True)
+    questions = db.relationship("Question", secondary=questions_to_lessons)
+    questions_to_pass = db.Column(db.Integer)
 
     def __repr__(self):
-        return f'Урок {self.id} {self.lesson_name}'
+        return f'Урок {self.id} {self.name}'
 
 
 class Slide(db.Model):
@@ -59,19 +70,17 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     correctanswer = db.Column(db.String(128))
     question_text = db.Column(db.String(128))
-    lesson_id = db.Column(db.Integer, db.ForeignKey('Lesson.id', ondelete='CASCADE'), index=True)
     question_type = db.Column(db.String(50))
-    lessons = db.relationship('Lesson', backref='questions')
+    answervariants = db.relationship("AnswerVariant", secondary=answervariants_to_questions)
+    
 
     def __repr__(self):
         return f'Вопрос {self.id} {self.question_text}'
 
 
-class Answer(db.Model):
-    __tablename__ = 'Answer'
+class AnswerVariant(db.Model):
+    __tablename__ = 'AnswerVariant'
     id = db.Column(db.Integer, primary_key=True)
-    question_id = db.Column(db.Integer, db.ForeignKey('Question.id', ondelete='CASCADE'), index=True)
-    questions = db.relationship('Question', backref='answers')
     answer_text = db.Column(db.String(128))
 
     def __repr__(self):
