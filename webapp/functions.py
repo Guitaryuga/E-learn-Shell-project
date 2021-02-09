@@ -1,7 +1,10 @@
 from urllib.parse import urlparse, urljoin
 
-from flask import request, flash, redirect
-from flask_login import current_user
+from flask import request, flash, redirect, url_for, current_app
+from flask_login import current_user, config
+from flask_admin import AdminIndexView
+from flask_admin.contrib.sqla import ModelView
+from webapp.decorators import admin_required
 
 from webapp.model import db, User_answer, Question
 
@@ -29,3 +32,19 @@ def checking_answer(correct_answer, answer_value, question_id):  # внутре�
         flash('Вы дали верный ответ', 'success')
     else:
         flash("Ответ неверный", "danger")
+
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        try:
+            return current_user.is_admin
+        except AttributeError:
+            flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
+            
+    def inaccessible_callback(self, name, **kwargs):
+        flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
+        return redirect(url_for('index', next=request.url))
+
+
+class UserView(ModelView):
+    column_exclude_list = ('password')

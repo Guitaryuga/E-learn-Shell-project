@@ -1,17 +1,28 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, LoginManager, login_required, login_user, logout_user
 from flask_migrate import Migrate
 
-from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer
+from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer, Answer
 from webapp.forms import LoginForm, QuestionForm, RegistrationForm, UserForm
 from webapp.decorators import admin_required
-from webapp.functions import checking_answer, get_redirect_target
+from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView
+
 
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
     migrate = Migrate(app, db)
+
+    admin = Admin(app, template_mode='bootstrap3', index_view=MyAdminIndexView())
+    admin.add_view(UserView(User, db.session))
+    admin.add_view(ModelView(Course, db.session))
+    admin.add_view(ModelView(Lesson, db.session))
+    admin.add_view(ModelView(User_answer, db.session))
+    admin.add_view(ModelView(Question, db.session))
+    admin.add_view(ModelView(Answer, db.session))
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -48,8 +59,13 @@ def create_app():
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
     def test():
         test_sample = User.query.filter(User.fio == 'Поляков Петр').all()
-        test_sample2 = Lesson.query.get(1)
-        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2)
+        test_sample2 = [1, 2, 3]
+        test_sample3 = 1
+        if test_sample3 in test_sample2:
+            test_sample4 = 'correct'
+        else:
+            test_sample4 = 'wrong'
+        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2, test_sample3=test_sample3, test_sample4=test_sample4)
 
     @app.route("/answerchecking/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
     def process_test(question_id):
@@ -73,37 +89,6 @@ def create_app():
         checking_answer(correct_answer, answer_value, question_id)
         return redirect(get_redirect_target())
 
-    @app.route("/admin", methods=['GET', 'POST']) # попытка сделать небольшую админку, чтобы можно было как-то отслеживать пользователей
-    @admin_required
-    def admin_index():
-        title = "Панель управления"
-        form = UserForm()
-        user = form.user_name.data
-        profiles = User.query.all()
-        try:
-            if user:
-                correct_user = User.query.filter(User.fio == user).all()
-                for info in correct_user:
-                    user_id = info.id
-                particular_user = User.query.get(user_id)
-                courses = particular_user.courses
-                user_progress = User_answer.query.filter(User_answer.user_id == user_id).all()
-                answered_questions = []
-                for lessons in user_progress:
-                    answered_questions.append(lessons.question_id)
-                return render_template('admin.html', page_title=title, profiles=profiles, form=form, 
-                                        answered_questions=answered_questions, courses=courses, user_progress=user_progress, user=user)
-        except UnboundLocalError:
-            flash('Неверный формат данных', 'danger')
-            return redirect(get_redirect_target())
-        return render_template('admin.html', page_title=title, profiles=profiles, form=form)
-
-    @app.route("/checkinguser", methods=['POST'])
-    def process_user():
-        form = UserForm()
-        user = form.user_id.data
-        
-        return redirect(get_redirect_target())
 
     @app.route("/course/<course_id>") #путь к курсам
     def course(course_id):
@@ -189,5 +174,30 @@ def create_app():
             return redirect(url_for('register'))
         flash('Пожалуйста, исправьте ошибки в форме', 'danger')
         return redirect(url_for('register'))
+
+    # @app.route("/admin", methods=['GET', 'POST']) # попытка сделать небольшую админку, чтобы можно было как-то отслеживать пользователей
+    # @admin_required
+    # def admin_index():
+    #     title = "Панель управления"
+    #     form = UserForm()
+    #     user = form.user_name.data
+    #     profiles = User.query.all()
+    #     try:
+    #         if user:
+    #             correct_user = User.query.filter(User.fio == user).all()
+    #             for info in correct_user:
+    #                 user_id = info.id
+    #             particular_user = User.query.get(user_id)
+    #             courses = particular_user.courses
+    #             user_progress = User_answer.query.filter(User_answer.user_id == user_id).all()
+    #             answered_questions = []
+    #             for lessons in user_progress:
+    #                 answered_questions.append(lessons.question_id)
+    #             return render_template('admin.html', page_title=title, profiles=profiles, form=form, 
+    #                                     answered_questions=answered_questions, courses=courses, user_progress=user_progress, user=user)
+    #     except UnboundLocalError:
+    #         flash('Неверный формат данных', 'danger')
+    #         return redirect(get_redirect_target())
+    #     return render_template('admin.html', page_title=title, profiles=profiles, form=form)
 
     return app
