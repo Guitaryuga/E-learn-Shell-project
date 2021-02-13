@@ -1,1 +1,1 @@
-# E-learn-project
+# Python E-learn Shell project
