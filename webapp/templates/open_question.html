@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-4">
         <h4>{{ question.question_text }}</h4>
-            <form action="{{ url_for('process_writing', question_id = question.id) }}" method='POST'>
+            <form action="{{ url_for('process_writing', question_id = question.id, lesson_id=lesson.id) }}" method='POST'>
                 {{ form.hidden_tag() }}
                 {% if not checked == [] %}
                 <div class="form-group">

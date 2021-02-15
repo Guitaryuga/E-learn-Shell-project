@@ -5,23 +5,23 @@ from webapp.model import db, Course, Lesson, Question, AnswerVariant, lessons_to
 """
 
 
-courses = [{'course_id': 1, 'name': 'Курс №5'}, 
-           {'course_id': 2, 'name': "Курс №5 кпп"},
-           {'course_id': 3, 'name': 'Курс №1'}, 
-           {'course_id': 4, 'name': 'Курс №2'}]
+courses = [{'course_id': 1, 'name': 'Курс №5', 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'}, 
+           {'course_id': 2, 'name': "Курс №5 кпп", 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'},
+           {'course_id': 3, 'name': 'Курс №1', 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'}, 
+           {'course_id': 4, 'name': 'Курс №2', 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'}]
 
-lessons_1 = [{'lesson_id': 1, 'name': 'Вступление', 'material_type': 'noslides', 'material': 'Проявления опасности веществ при их перевозках воздушным транспортом'},
-             {'lesson_id': 2, 'name': 'Введение', 'material_type': 'noslides', 'material': 'https://www.youtube.com/embed/UBX8MWYel3s'},
-             {'lesson_id': 3, 'name': 'Общие принципы', 'material_type': 'slides', 'material': 'slides'},
-             {'lesson_id': 4, 'name': 'Правовая основа', 'material_type': 'noslides', 'material': 'Text_sample'},
-             {'lesson_id': 5, 'name': 'Что представляют собой опасные грузы?', 'material_type': 'noslides', 'material': 'Text_sample'},
-             {'lesson_id': 6, 'name': 'Общие принципы классификации опасных грузов', 'material_type': 'noslides', 'material': '/static/pdf/posobie_1.pdf'}
+lessons = [{'lesson_id': 1, 'name': 'Вступление', 'material_type': 'noslides', 'material': 'Проявления опасности веществ при их перевозках воздушным транспортом', 'qtp': 1},
+             {'lesson_id': 2, 'name': 'Введение', 'material_type': 'noslides', 'material': 'https://www.youtube.com/embed/UBX8MWYel3s', 'qtp': 1},
+             {'lesson_id': 3, 'name': 'Общие принципы', 'material_type': 'slides', 'material': 'slides', 'qtp': 1},
+             {'lesson_id': 4, 'name': 'Правовая основа', 'material_type': 'noslides', 'material': 'Text_sample', 'qtp': 1},
+             {'lesson_id': 5, 'name': 'Что представляют собой опасные грузы?', 'material_type': 'noslides', 'material': 'Text_sample', 'qtp': 1},
+             {'lesson_id': 6, 'name': 'Общие принципы классификации опасных грузов', 'material_type': 'noslides', 'material': '/static/pdf/posobie_1.pdf', 'qtp': 1}
            ]
 
 slides = [{'slide_id': 1, 'lesson_id': 3, 'link': '/static/slides/1.jpg'}, {'slide_id': 2, 'lesson_id': 3, 'link': '/static/slides/2.jpg'}, 
           {'slide_id': 3, 'lesson_id': 3, 'link': '/static/slides/3.jpg'}]
 
-lessons_to_courses_data = {1: [1, 2, 3, 4, 5, 6], 
+lessons_to_courses_data = {1: [1, 2, 3, 4, 5, 6],
                       2: [1, 2, 3],
                       3: [3, 4],
                       4: [1, 2]}
@@ -51,7 +51,7 @@ answers = [{'answer_id': 1,  'answer_text': 'This thing'},
 
 
 def extracting_data():
-  for check_lesson in lessons_1:
+  for check_lesson in lessons:
     save_lessons(**check_lesson)
   
   for check_course in courses:
@@ -67,10 +67,10 @@ def extracting_data():
     save_slides(**check_slide)
   
 
-def save_courses(course_id, name):
+def save_courses(course_id, name, info, conditions, content):
   courses_exists = Course.query.filter(Course.name == name).count()
   if not courses_exists:
-    new_course = Course(id=course_id, name=name)
+    new_course = Course(id=course_id, name=name, info=info, conditions=conditions, content=content)
     new_course.lessons = [Lesson.query.get(x) for x in lessons_to_courses_data[course_id]]
     db.session.add(new_course)
     db.session.commit()
@@ -82,10 +82,10 @@ def save_courses(course_id, name):
         db.session.execute(stmt)
 
 
-def save_lessons(lesson_id, name, material_type, material):
+def save_lessons(lesson_id, name, material_type, material, qtp):
   lessons_exists = Lesson.query.filter(Lesson.name == name).count()
   if not lessons_exists:
-    new_lessons = Lesson(id=lesson_id, name=name, material_type=material_type, material=material)
+    new_lessons = Lesson(id=lesson_id, name=name, material_type=material_type, material=material, questions_to_pass=qtp)
     db.session.add(new_lessons)
     db.session.commit()
 

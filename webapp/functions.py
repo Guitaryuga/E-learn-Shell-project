@@ -15,7 +15,8 @@ def is_safe_url(target):
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
 
-def get_redirect_target():  # модификация для request.referrer, для проверки безопасности url
+# модификация для request.referrer, для проверки безопасности url
+def get_redirect_target():
     for target in request.values.get('next'), request.referrer:
         if not target:
             continue
@@ -23,14 +24,29 @@ def get_redirect_target():  # модификация для request.referrer, д
             return target
 
 
-def checking_answer(correct_answer, answer_value, question_id):  # внутренняя функция проверки ответов в тесте и занесения ответа пользователя в БД
+# внутренняя функция проверки ответов в тесте и занесения ответа пользователя в БД
+def checking_answer(correct_answer, answer_value, question_id, lesson_id, lesson_name):
     if correct_answer == answer_value:
         answer_status = "correct"
-        answer = User_answer(answer_status=answer_status, question_id=question_id, user_answer=answer_value, user_id=current_user.id)
+        answer = User_answer(answer_status=answer_status,
+                             question_id=question_id,
+                             user_answer=answer_value,
+                             user_id=current_user.id,
+                             lesson_id=lesson_id,
+                             lesson_name=lesson_name)
         db.session.add(answer)
         db.session.commit()
         flash('Вы дали верный ответ', 'success')
     else:
+        answer_status = "wrong"
+        answer = User_answer(answer_status=answer_status,
+                             question_id=question_id,
+                             user_answer=answer_value,
+                             user_id=current_user.id,
+                             lesson_id=lesson_id,
+                             lesson_name=lesson_name)
+        db.session.add(answer)
+        db.session.commit()
         flash("Ответ неверный", "danger")
 
 
@@ -40,7 +56,7 @@ class MyAdminIndexView(AdminIndexView):
             return current_user.is_admin
         except AttributeError:
             flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
-            
+
     def inaccessible_callback(self, name, **kwargs):
         flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
         return redirect(url_for('index', next=request.url))
