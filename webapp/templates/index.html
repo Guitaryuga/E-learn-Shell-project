@@ -50,7 +50,7 @@
   {% endwith %} 
   <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">Список курсов</h1>
-    <p class="lead">Выберите подходящий курс для изучения. После оплаты курс будет всегда вам доступен из вашего профиля.</p>
+    <p class="lead">Выберите подходящий курс для изучения. После поступления курс будет всегда вам доступен из вашего профиля.</p>
   </div>
   <div class="row">
       {% for info in all_courses %}
@@ -69,7 +69,7 @@
                 </li>
               </ul>
               {% if current_user.is_authenticated and info in user_courses %}
-              <button type="button" class="btn btn-secondary btn-lg mt-auto" disabled>Курс приобретен</button>
+              <button type="button" class="btn btn-secondary btn-lg mt-auto" disabled>Курс добавлен</button>
               {% elif current_user.is_authenticated %}
               <button type="button" class="w-100 btn btn-lg btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#Modal{{ info.id }}">Поступить на курс</button>
               {% else %}
@@ -85,9 +85,9 @@
         <div class="col-6 col-sm-3">
             <h5>Контакты</h5>
             <ul class="list-unstyled text-small">
-              <li>Тел.:(495) 967-11-98 </li>
-              <li>Факс: (495) 258-66-10</li>
-              <li>E-mail: intercargoexpertise@icedgr.ru</li>
+              <li>Тел.:+7(000) 000-00-00 </li>
+              <li>Факс: (000) 00-00-00</li>
+              <li>E-mail: test@example.com</li>
             </ul>
         </div>
     </div>   
