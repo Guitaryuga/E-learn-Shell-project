@@ -8,9 +8,11 @@
 {% autoescape false %}
   {{ lesson.material }}
 {% endautoescape %}
+{% for question in questions %}
 {% if question.question_type == 'closed' %}
   {% include 'closed_question.html' %}
 {% else %}
   {% include 'open_question.html' %}
 {% endif %}
+{% endfor %}
 {% endblock %}

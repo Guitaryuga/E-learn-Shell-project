@@ -16,7 +16,8 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
 
-    admin = Admin(app, template_mode='bootstrap3', index_view=MyAdminIndexView())
+    admin = Admin(app, template_mode='bootstrap3',
+                  index_view=MyAdminIndexView())
     admin.add_view(UserView(User, db.session))
     admin.add_view(ModelView(Course, db.session))
     admin.add_view(ModelView(Lesson, db.session))
@@ -38,11 +39,13 @@ def create_app():
         title = "Список курсов"
         if current_user.is_authenticated:
             user_courses = current_user.courses
-            return render_template('index.html', page_title=title, user_courses=user_courses, all_courses=all_courses)
+            return render_template('index.html', page_title=title,
+                                   user_courses=user_courses,
+                                   all_courses=all_courses)
         else:
             title = "Список курсов"
-            return render_template('index.html', page_title=title, all_courses=all_courses)
-            
+            return render_template('index.html', page_title=title,
+                                   all_courses=all_courses)
 
     @app.route("/confirmation", methods=['POST'])  # процесс подтверждения записи на курс
     def process_confirm():
@@ -58,51 +61,68 @@ def create_app():
 
     @app.route("/test")  # тестовый роут с тестовой страницей для проверки отображения материала
     def test():
-        test_sample = Question.query.get(1)
-        test_sample2 = test_sample.answervariants
-        test_sample3 = 1
-        return render_template('test_template.html', test_sample=test_sample, test_sample2=test_sample2, test_sample3=test_sample3)
+        test_sample = Lesson.query.get(current_user.id)
+        test_sample2 = test_sample.questions_to_pass
+        test_sample3 = User_answer.query.filter(User_answer.user_id == current_user.id, User_answer.answer_status == 'correct', User_answer.lesson_id == 1).count()
+        return render_template('test_template.html', test_sample=test_sample,
+                               test_sample2=test_sample2,
+                               test_sample3=test_sample3)
 
-    @app.route("/answerchecking/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
-    def process_test(question_id):
+    @app.route("/answerchecking/<lesson_id>/<question_id>", methods=['POST'])  # проверка правильности выбора правильного варианта ответа
+    def process_test(question_id, lesson_id):
         try:
             answer_data = request.form.to_dict()
             answer_value = answer_data['answer']
+            print(answer_value)
             correct_question = Question.query.get(question_id)
             correct_answer = correct_question.correctanswer
-            checking_answer(correct_answer, answer_value, question_id)
+            correct_lesson = Lesson.query.get(lesson_id)
+            lesson_id = correct_lesson.id
+            lesson_name = correct_lesson.name
+            checking_answer(correct_answer, answer_value, question_id,
+                            lesson_id, lesson_name)
             return redirect(get_redirect_target())
         except KeyError:
             flash('Необходимо выбрать вариант ответа', 'danger')
             return redirect(get_redirect_target())
 
-    @app.route("/handwritechecking/<question_id>", methods=['POST'])  # проверка правильности написанного ответа
-    def process_writing(question_id):
+    @app.route("/handwritechecking/<lesson_id>/<question_id>",
+               methods=['POST'])  # проверка правильности написанного ответа
+    def process_writing(question_id, lesson_id):
         form = QuestionForm()
         answer_value = form.answer.data
         correct_question = Question.query.get(question_id)
         correct_answer = correct_question.correctanswer
-        checking_answer(correct_answer, answer_value, question_id)
+        correct_lesson = Lesson.query.get(lesson_id)
+        lesson_id = correct_lesson.id
+        lesson_name = correct_lesson.name
+        checking_answer(correct_answer, answer_value, question_id,
+                        lesson_id, lesson_name)
         return redirect(get_redirect_target())
 
 
-    @app.route("/course/<course_id>") #путь к курсам
+    @app.route("/course/<course_id>")  #путь к курсам
     def course(course_id):
         if current_user.is_authenticated:
             course = Course.query.get(course_id)
-            return render_template('course.html', course=course, course_id=course_id, page_title=course.name, lesson=course, contents=course.content) # lesson=lesson - заглушка, course/<course_id> должен выдавать
-        else:                                                                                                                 # кртакое содержание или инфу по курсу, "Содержание" сделать кликабельным
+            return render_template('course.html', course=course,
+                                   course_id=course_id,
+                                   page_title=course.name, lesson=course,
+                                   contents=course.content)
+        else:                                                                                                                 
             flash('Вам необходимо зарегистрироваться или войти', 'danger')
             return redirect(url_for('index'))
-        
-    @app.route("/course/<course_id>/lesson/<lesson_id>") # путь к урокам в курсах
+      
+    @app.route("/course/<course_id>/lesson/<lesson_id>")  # путь к урокам в курсах
     def lesson(course_id, lesson_id):
         form = QuestionForm()
         lesson = Lesson.query.get(lesson_id)
         course = Course.query.get(course_id)
-        question = Question.query.get(lesson_id)
-        checked = User_answer.query.filter(User_answer.user_id == current_user.id, User_answer.question_id == question.id).all()
-        return render_template('lesson.html', checked=checked, course=course, course_id=course_id, form=form, lesson=lesson, page_title=lesson.name, question=question)
+        questions = lesson.questions
+        user_answer = User_answer
+        return render_template('lesson.html', course=course, course_id=course_id,
+                               form=form, lesson=lesson, page_title=lesson.name,
+                               questions=questions, user_answer=user_answer)
 
     @app.route("/login")
     def login():
@@ -110,7 +130,8 @@ def create_app():
             return redirect(url_for("index"))
         title = "Авторизация"
         login_form = LoginForm()
-        return render_template('signin.html', form=login_form, page_title=title) 
+        return render_template('signin.html', form=login_form,
+                               page_title=title)
 
     @app.route("/process-login", methods=['POST'])
     def process_login():
@@ -123,19 +144,17 @@ def create_app():
                 flash('Вы вошли на сайт', 'success')
                 return redirect(url_for("index"))               
         flash('Неверное имя пользователя или пароль', 'danger')
-        return redirect(url_for("login")) 
+        return redirect(url_for("login"))
 
     @app.route("/user/<username>")
     @login_required
     def user(username):
         profile = User.query.get(current_user.id)
         courses = profile.courses
-        user_progress = User_answer.query.filter(User_answer.user_id == current_user.id).all()
-        answered_questions = []
-        for lessons in user_progress:
-            answered_questions.append(lessons.question_id)
+        progress = User_answer
         title = "Профиль"
-        return render_template('profile.html', answered_questions=answered_questions, courses=courses, page_title=title, user_progress=user_progress)
+        return render_template('profile.html', courses=courses, 
+                               page_title=title, progress=progress)
         
     @app.route("/logout")
     def logout():
@@ -149,7 +168,8 @@ def create_app():
             return redirect(url_for('index'))
         title = "Регистрация пользователя"
         form = RegistrationForm()
-        return render_template('registration.html', form=form, page_title=title)
+        return render_template('registration.html', form=form, 
+                               page_title=title)
 
     @app.route("/process-reg", methods=['POST'])
     def process_reg():
@@ -157,7 +177,8 @@ def create_app():
         if form.validate_on_submit():
             new_user = User(username=form.username.data, fio=form.fio.data, 
                             company=form.company.data, position=form.position.data, 
-                            date_of_birth=form.date_of_birth.data, phone_number=form.phone_number.data, role='user')
+                            date_of_birth=form.date_of_birth.data, 
+                            phone_number=form.phone_number.data, role='user')
             new_user.set_password(form.password.data)
             db.session.add(new_user)
             db.session.commit()
@@ -170,30 +191,5 @@ def create_app():
             return redirect(url_for('register'))
         flash('Пожалуйста, исправьте ошибки в форме', 'danger')
         return redirect(url_for('register'))
-
-    # @app.route("/admin", methods=['GET', 'POST']) # попытка сделать небольшую админку, чтобы можно было как-то отслеживать пользователей
-    # @admin_required
-    # def admin_index():
-    #     title = "Панель управления"
-    #     form = UserForm()
-    #     user = form.user_name.data
-    #     profiles = User.query.all()
-    #     try:
-    #         if user:
-    #             correct_user = User.query.filter(User.fio == user).all()
-    #             for info in correct_user:
-    #                 user_id = info.id
-    #             particular_user = User.query.get(user_id)
-    #             courses = particular_user.courses
-    #             user_progress = User_answer.query.filter(User_answer.user_id == user_id).all()
-    #             answered_questions = []
-    #             for lessons in user_progress:
-    #                 answered_questions.append(lessons.question_id)
-    #             return render_template('admin.html', page_title=title, profiles=profiles, form=form, 
-    #                                     answered_questions=answered_questions, courses=courses, user_progress=user_progress, user=user)
-    #     except UnboundLocalError:
-    #         flash('Неверный формат данных', 'danger')
-    #         return redirect(get_redirect_target())
-    #     return render_template('admin.html', page_title=title, profiles=profiles, form=form)
 
     return app

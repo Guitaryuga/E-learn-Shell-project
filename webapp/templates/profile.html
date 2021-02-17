@@ -61,7 +61,7 @@
                 {% for course_name in courses %}
                 <h2>Статус</h2>
                   {% for lesson_name in course_name.lessons %}
-                      {% if lesson_name.id in answered_questions %}
+                      {% if lesson_name.questions_to_pass == progress.query.filter(progress.user_id == current_user.id, progress.answer_status == 'correct', progress.lesson_id == lesson_name.id).count() %}
                         <li class="list-group-item"><h5><span class="text-success">Пройден</span></h5></li>
                       {% else %}
                       <li class="list-group-item"><h5><span class='text-danger'>Не пройден</span></h5></li>

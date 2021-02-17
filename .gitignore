@@ -130,3 +130,5 @@ dmypy.json
 
 webapp.db
 config.py
+test.py
+oldcode.py
