@@ -51,12 +51,4 @@ class QuestionForm(FlaskForm):
     answer = StringField('Ответ', validators=[DataRequired()],
                          render_kw={"class": "form-control", "placeholder": "Ваш ответ"})
     submit = SubmitField('Ответить',
-                         render_kw={"class": "w-100 btn btn-lg btn-primary"})
-
-
-class UserForm(FlaskForm):
-    user_name = StringField(validators=[DataRequired()],
-                            render_kw={"class": "form-control",
-                            "placeholder": "Укажите имя пользователя"})
-    submit = SubmitField('Проверить',
-                         render_kw={"class": "w-100 btn btn-lg btn-primary"})
+                         render_kw={"class": "btn btn-primary mt-2"})

@@ -75,7 +75,7 @@ class Question(db.Model):
 
 
     def __repr__(self):
-        return f'Вопрос {self.id} {self.question_text}'
+        return f'Вопрос {self.id} {self.question_text}, тип {self.question_type}'
 
 
 class AnswerVariant(db.Model):
@@ -100,7 +100,7 @@ class User_answer(db.Model):
     answer_status = db.Column(db.String(50))
 
     def __repr__(self):
-        return f'Пользователь {self.user_id}, ответ {self.user_answer}'
+        return f'Пользователь {self.user_id}, вопрос {self.question_id}, ответ {self.user_answer}'
 
       
 class User(db.Model, UserMixin):
@@ -122,7 +122,7 @@ class User(db.Model, UserMixin):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
-  
+
     def check_password(self, password):
         return check_password_hash(self.password, password)
 

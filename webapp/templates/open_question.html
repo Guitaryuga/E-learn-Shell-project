@@ -3,7 +3,7 @@
         <h4>{{ question.question_text }}</h4>
             <form action="{{ url_for('process_writing', question_id = question.id, lesson_id=lesson.id) }}" method='POST'>
                 {{ form.hidden_tag() }}
-                {% if not checked == [] %}
+                {% if user_answer.query.filter(user_answer.user_id == current_user.id, user_answer.answer_status == 'correct', user_answer.lesson_id == lesson.id, user_answer.question_id == question.id).all() %}
                 <div class="form-group">
                     <input class="form-control" id="disabledInput" type="text" placeholder="Правильный ответ: {{ question.correctanswer }}" disabled>
                 </div>

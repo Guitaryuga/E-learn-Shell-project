@@ -109,10 +109,10 @@ def create_app():
                                    course_id=course_id,
                                    page_title=course.name, lesson=course,
                                    contents=course.content)
-        else:                                                                                                                 
+        else:                                                                                      
             flash('Вам необходимо зарегистрироваться или войти', 'danger')
             return redirect(url_for('index'))
-      
+
     @app.route("/course/<course_id>/lesson/<lesson_id>")  # путь к урокам в курсах
     def lesson(course_id, lesson_id):
         form = QuestionForm()
@@ -153,9 +153,9 @@ def create_app():
         courses = profile.courses
         progress = User_answer
         title = "Профиль"
-        return render_template('profile.html', courses=courses, 
+        return render_template('profile.html', courses=courses,
                                page_title=title, progress=progress)
-        
+
     @app.route("/logout")
     def logout():
         logout_user()
@@ -168,16 +168,16 @@ def create_app():
             return redirect(url_for('index'))
         title = "Регистрация пользователя"
         form = RegistrationForm()
-        return render_template('registration.html', form=form, 
+        return render_template('registration.html', form=form,
                                page_title=title)
 
     @app.route("/process-reg", methods=['POST'])
     def process_reg():
         form = RegistrationForm()
         if form.validate_on_submit():
-            new_user = User(username=form.username.data, fio=form.fio.data, 
-                            company=form.company.data, position=form.position.data, 
-                            date_of_birth=form.date_of_birth.data, 
+            new_user = User(username=form.username.data, fio=form.fio.data,
+                            company=form.company.data, position=form.position.data,
+                            date_of_birth=form.date_of_birth.data,
                             phone_number=form.phone_number.data, role='user')
             new_user.set_password(form.password.data)
             db.session.add(new_user)
