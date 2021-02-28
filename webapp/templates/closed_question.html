@@ -1,36 +1,34 @@
-{% if user_answer.query.filter(user_answer.user_id == current_user.id, user_answer.answer_status == 'correct', user_answer.lesson_id == lesson.id, user_answer.question_id == question.id).all() %}
-        <form action="{{url_for('process_test', question_id = question.id, lesson_id = lesson.id)}}" method='POST'>
-                <div class="row">
-                    <div class="col-4">
+<div class="row">
+    <div class="col-6">
+        <div class="card mt-2">
+            <div class="card-body">
+                <form action="{{url_for('process_test', question_id = question.id, lesson_id = lesson.id)}}" method='POST'>
+                    {% if user_answer.query.filter(user_answer.user_id == current_user.id, user_answer.answer_status == 'correct', user_answer.lesson_id == lesson.id, user_answer.question_id == question.id).all() %}
+                        <div class="list-group mt-2">
+                            <h5>{{ question.question_text }}</h5>
+                                    {% for answer in question.answervariants %}
+                                    <label class="list-group-item disabled">
+                                        <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-disabled="true">
+                                        {{ answer.answer_text }}
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                                <span class="text-success"><strong>Вы дали верный ответ! Правильный ответ: {{ question.correctanswer }}</strong></span>
+                                <li style='list-style: none'><button type="button" class="btn btn-success mt-2" disabled>Ответить</button></li>
+                    {% else %}
                         <div class="list-group mt-2">
                             <h5>{{ question.question_text }}</h5>
                             {% for answer in question.answervariants %}
-                            <label class="list-group-item disabled">
-                                <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-disabled="true">
+                            <label class="list-group-item">
+                                <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-label="...">
                                 {{ answer.answer_text }}
                             </label>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
-                <span class="text-success"><strong>Вы дали верный ответ! Правильный ответ: {{ question.correctanswer }}</strong></span>
-                <li style='list-style: none'><button type="button" class="btn btn-success mt-2" disabled>Ответить</button></li>
-        </form>
-    {% else %}
-    <form action="{{url_for('process_test', question_id = question.id, lesson_id = lesson.id)}}" method='POST'>
-        <div class="row">
-            <div class="col-4">
-                <div class="list-group mt-2">
-                    <h5>{{ question.question_text }}</h5>
-                    {% for answer in question.answervariants %}
-                    <label class="list-group-item">
-                        <input class="form-check-input me-1" type="checkbox" name='answer' value="{{ answer.answer_text }}" aria-label="...">
-                        {{ answer.answer_text }}
-                    </label>
-                    {% endfor %}
-                </div>
+                        <li style='list-style: none'><button class="btn btn-primary mt-2" type="submit"> Ответить </button></li>
+                    {% endif %}
+                </form>
             </div>
         </div>
-        <li style='list-style: none'><button class="btn btn-primary mt-2" type="submit"> Ответить </button></li>
-    </form>
-{% endif %}
+    </div>
+</div>

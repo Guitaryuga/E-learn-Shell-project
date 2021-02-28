@@ -5,7 +5,7 @@ from flask_login import current_user, LoginManager, login_required, login_user, 
 from flask_migrate import Migrate
 
 from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer, AnswerVariant
-from webapp.forms import LoginForm, QuestionForm, RegistrationForm, UserForm
+from webapp.forms import LoginForm, QuestionForm, RegistrationForm
 from webapp.decorators import admin_required
 from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView
 
@@ -73,7 +73,6 @@ def create_app():
         try:
             answer_data = request.form.to_dict()
             answer_value = answer_data['answer']
-            print(answer_value)
             correct_question = Question.query.get(question_id)
             correct_answer = correct_question.correctanswer
             correct_lesson = Lesson.query.get(lesson_id)
