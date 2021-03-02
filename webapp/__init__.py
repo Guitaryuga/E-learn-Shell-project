@@ -1,13 +1,14 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_ckeditor import CKEditor, CKEditorField
 from flask_login import current_user, LoginManager, login_required, login_user, logout_user
 from flask_migrate import Migrate
 
 from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer, AnswerVariant
 from webapp.forms import LoginForm, QuestionForm, RegistrationForm
 from webapp.decorators import admin_required
-from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView
+from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView, CourseAdmin, LessonAdmin
 
 
 def create_app():
@@ -15,12 +16,13 @@ def create_app():
     app.config.from_pyfile('config.py')
     db.init_app(app)
     migrate = Migrate(app, db)
+    ckeditor = CKEditor(app)
 
     admin = Admin(app, template_mode='bootstrap3',
                   index_view=MyAdminIndexView())
     admin.add_view(UserView(User, db.session))
-    admin.add_view(ModelView(Course, db.session))
-    admin.add_view(ModelView(Lesson, db.session))
+    admin.add_view(CourseAdmin(Course, db.session))
+    admin.add_view(LessonAdmin(Lesson, db.session))
     admin.add_view(ModelView(User_answer, db.session))
     admin.add_view(ModelView(Question, db.session))
     admin.add_view(ModelView(AnswerVariant, db.session))

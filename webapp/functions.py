@@ -4,6 +4,7 @@ from flask import request, flash, redirect, url_for, current_app
 from flask_login import current_user, config
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+from flask_ckeditor import CKEditor, CKEditorField
 from webapp.decorators import admin_required
 
 from webapp.model import db, User_answer, Question
@@ -64,3 +65,16 @@ class MyAdminIndexView(AdminIndexView):
 
 class UserView(ModelView):
     column_exclude_list = ('password')
+
+
+class CourseAdmin(ModelView):
+    form_overrides = dict(info=CKEditorField, content=CKEditorField)
+    create_template = 'edit.html'
+    edit_template = 'edit.html'
+
+
+class LessonAdmin(ModelView):
+    form_overrides = dict(material=CKEditorField)
+    create_template = 'edit.html'
+    edit_template = 'edit.html'
+
