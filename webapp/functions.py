@@ -67,14 +67,14 @@ class UserView(ModelView):
     column_exclude_list = ('password')
 
 
-class CourseAdmin(ModelView):
-    form_overrides = dict(info=CKEditorField, content=CKEditorField)
+class LessonAdmin(ModelView):
+    form_overrides = dict(material=CKEditorField)
     create_template = 'edit.html'
     edit_template = 'edit.html'
 
 
-class LessonAdmin(ModelView):
-    form_overrides = dict(material=CKEditorField)
+class CourseAdmin(ModelView):
+    form_overrides = dict(info=CKEditorField, content=CKEditorField)
     create_template = 'edit.html'
     edit_template = 'edit.html'
 
