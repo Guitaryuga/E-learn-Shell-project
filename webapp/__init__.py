@@ -1,15 +1,21 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+import os
+import os.path as op
+
+from flask import Flask, flash, redirect, render_template, request, url_for, send_from_directory
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_ckeditor import CKEditor, CKEditorField
+from flask_admin.contrib.fileadmin import FileAdmin
+from flask_ckeditor import CKEditor, CKEditorField, upload_fail, upload_success
 from flask_login import current_user, LoginManager, login_required, login_user, logout_user
 from flask_migrate import Migrate
+
 
 from webapp.model import db, Course, Lesson, lessons_to_courses, Question, User, users_to_courses, User_answer, AnswerVariant
 from webapp.forms import LoginForm, QuestionForm, RegistrationForm
 from webapp.decorators import admin_required
-from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView, CourseAdmin, LessonAdmin
+from webapp.functions import checking_answer, get_redirect_target, MyAdminIndexView, UserView, LessonAdmin, CourseAdmin
 
+path = op.join(op.dirname(__file__), 'uploads')
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +23,7 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
     ckeditor = CKEditor(app)
+
 
     admin = Admin(app, template_mode='bootstrap3',
                   index_view=MyAdminIndexView())
@@ -26,6 +33,7 @@ def create_app():
     admin.add_view(ModelView(User_answer, db.session))
     admin.add_view(ModelView(Question, db.session))
     admin.add_view(ModelView(AnswerVariant, db.session))
+    admin.add_view(FileAdmin(path, '/uploads/', name='Upload images'))
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -192,5 +200,22 @@ def create_app():
             return redirect(url_for('register'))
         flash('Пожалуйста, исправьте ошибки в форме', 'danger')
         return redirect(url_for('register'))
+
+    @app.route('/uploads/<filename>')
+    def uploaded_files(filename):
+        path = app.config['UPLOADED_PATH']
+        return send_from_directory(path, filename)
+
+
+    @app.route('/upload', methods=['POST'])
+    def upload():
+        f = request.files.get('upload')
+        extension = f.filename.split('.')[-1].lower()
+        if extension not in ['jpg', 'gif', 'png', 'jpeg']:
+            return upload_fail(message='Image only!')
+        f.save(os.path.join(app.config['UPLOADED_PATH'], f.filename))
+        url = url_for('uploaded_files', filename=f.filename)
+        return upload_success(url=url)
+
 
     return app
