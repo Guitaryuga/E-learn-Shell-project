@@ -1,4 +1,4 @@
-from webapp.model import db
+from webapp.db import db
 
 
 lessons_to_courses = db.Table('lessons_to_courses',                  

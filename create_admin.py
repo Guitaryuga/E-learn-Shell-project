@@ -2,8 +2,12 @@ from getpass import getpass
 import sys
 
 from webapp import create_app
-from webapp.model import db
+from webapp.db import db
 from webapp.user.models import User
+
+'''
+Создание пользователя с ролью администратора
+'''
 
 app = create_app()
 

@@ -1,4 +1,4 @@
-from webapp.model import db
+from webapp.db import db
 from webapp.courses.models import lessons_to_courses, Course, Lesson, Slide, Question, AnswerVariant
 
 """
@@ -16,7 +16,7 @@ lessons = [{'lesson_id': 1, 'name': 'Вступление', 'material_type': 'no
               'material': '<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQpIv4WGoZMl-saeFqKyO9NWRVOqHJ3Zui3-k_3dAuZKmqTdDD3-JZGrKd5CGYJ7g/embed?start=false&loop=false&delayms=3000" frameborder="0" width="150%" height="600" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>', 'qtp': 1},
              {'lesson_id': 3, 'name': 'Общие принципы', 'material_type': 'slides', 'material': '<h5>Дополнительные пояснения</h5>', 'qtp': 1},
              {'lesson_id': 4, 'name': 'Основы основ', 'material_type': 'noslides', 'material': '<div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" allowfullscreen></iframe></div>', 'qtp': 1},
-             {'lesson_id': 5, 'name': 'Что это собой представляет?', 'material_type': 'noslides', 'material': '/static/pdf/dummy.pdf', 'qtp': 1},
+             {'lesson_id': 5, 'name': 'Что это собой представляет?', 'material_type': 'noslides', 'material': '<iframe src="/static/pdf/dummy.pdf" width="150%" height="800"></iframe>', 'qtp': 1},
              {'lesson_id': 6, 'name': 'Дальнейший разбор', 'material_type': 'noslides', 'material': 'Text_sample', 'qtp': 1}
            ]
 
