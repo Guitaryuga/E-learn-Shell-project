@@ -2,7 +2,7 @@
 
 {% block tail %}
     {{ super() }}
-    {{ ckeditor.load(custom_url=url_for('static', filename='ckeditor/ckeditor.js')) }}
+    {{ ckeditor.load(pkg_type="full") }}
     {# The name value should be the name of the CKEditor form field, here is `text`. #}
     {{ ckeditor.config(name='material') }}
 {% endblock %}

@@ -1,4 +1,5 @@
-from webapp.model import db, Course, Lesson, Question, AnswerVariant, lessons_to_courses, Slide
+from webapp.model import db
+from webapp.courses.models import lessons_to_courses, Course, Lesson, Slide, Question, AnswerVariant
 
 
 """
