@@ -23,6 +23,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db')
 SECRET_KEY = "YOUR_SECRET_KEY"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+CKEDITOR_FILE_UPLOADER = 'upload'
+UPLOADED_PATH = os.path.join(basedir, 'uploads')
 ```
 ### Создание и наполнение базы данных
 Выполните в консоли:
