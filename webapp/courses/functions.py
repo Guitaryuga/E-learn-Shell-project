@@ -3,7 +3,7 @@ from urllib.parse import urlparse, urljoin
 from flask import request, flash
 from flask_login import current_user
 
-from webapp.model import db
+from webapp.db import db
 from webapp.user.models import User_answer
 
 

@@ -4,7 +4,7 @@ from webapp.courses.forms import QuestionForm
 from webapp.courses.models import Course, Lesson, Question
 from webapp.user.models import User_answer
 from webapp.courses.functions import checking_answer, get_redirect_target
-from webapp.model import db
+from webapp.db import db
 
 blueprint = Blueprint('material', __name__)
 

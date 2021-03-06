@@ -9,7 +9,7 @@ from flask_ckeditor import CKEditor, upload_fail, upload_success
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
-from webapp.model import db
+from webapp.db import db
 from webapp.user.models import User, User_answer
 from webapp.courses.models import Course, Lesson, Question, AnswerVariant
 from webapp.admin.custom_views import MyAdminIndexView, UserView, LessonAdmin, CourseAdmin
