@@ -2,6 +2,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
+'''
+Форма для вопросов открытого типа в уроках
+'''
+
 
 class QuestionForm(FlaskForm):
     answer = StringField('Ответ', validators=[DataRequired()],
