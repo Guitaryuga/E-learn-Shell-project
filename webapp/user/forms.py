@@ -4,6 +4,10 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 from webapp.user.models import User
 
+'''
+Формы для логина и регистрации пользователей
+'''
+
 
 class LoginForm(FlaskForm):
     username = StringField('Логин или e-mail',

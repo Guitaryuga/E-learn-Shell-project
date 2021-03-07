@@ -1,7 +1,12 @@
 from webapp.db import db
 
+'''
+Модели для базы данных, по части курсов и входящих в них уроков,
+вопросов, тестов и вариантов ответов на них
+'''
 
-lessons_to_courses = db.Table('lessons_to_courses',                  
+
+lessons_to_courses = db.Table('lessons_to_courses',
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
     db.Column('lesson_id', db.Integer, db.ForeignKey('Lesson.id')),
     db.Column('order', db.Integer))

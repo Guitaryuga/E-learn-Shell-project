@@ -3,6 +3,11 @@ from flask_login import UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from webapp.db import db
 
+'''
+Модели пользователя для базы данных и ответов на тесты,
+которые дает пользователь
+'''
+
 users_to_courses = db.Table('users_to_courses',
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('User.id')))

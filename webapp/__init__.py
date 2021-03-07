@@ -20,6 +20,11 @@ from webapp.courses.views import blueprint as courses_blueprint
 path = op.join(op.dirname(__file__), 'uploads')
 
 
+'''
+Приложение, параметры, блюпринты и вьюшки
+'''
+
+
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
@@ -56,6 +61,12 @@ def create_app():
         return render_template('test_template.html', test_sample=test_sample,
                                test_sample2=test_sample2,
                                test_sample3=test_sample3)
+
+
+    '''
+    Роуты для возможности загрузки файлов в админке
+    '''
+
 
     @app.route('/uploads/<filename>')
     def uploaded_files(filename):

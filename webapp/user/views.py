@@ -6,6 +6,10 @@ from webapp.db import db
 
 blueprint = Blueprint('users', __name__, url_prefix='/users')
 
+'''
+Вход-выход пользователя
+'''
+
 
 @blueprint.route("/login")
 def login():
@@ -38,6 +42,11 @@ def process_login():
     return redirect(url_for("users.login"))
 
 
+'''
+Процесс регистрации пользователя
+'''
+
+
 @blueprint.route("/register")
 def register():
     if current_user.is_authenticated:
@@ -68,6 +77,11 @@ def process_reg():
         return redirect(url_for('users.register'))
     flash('Пожалуйста, исправьте ошибки в форме', 'danger')
     return redirect(url_for('users.register'))
+
+
+'''
+Профиль пользователя
+'''
 
 
 @blueprint.route("/profile/<username>")
