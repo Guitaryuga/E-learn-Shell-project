@@ -8,21 +8,51 @@ from webapp.courses.models import lessons_to_courses, Course, Lesson, Slide, Que
 """
 
 
-courses = [{'course_id': 1, 'name': 'Курс №5', 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'},
-           {'course_id': 2, 'name': "Курс №5 кпп", 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'},
-           {'course_id': 3, 'name': 'Курс №1', 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'},
-           {'course_id': 4, 'name': 'Курс №2', 'info': 'Your info about this course', 'conditions': '$Условия', 'content': 'Course content'}]
+courses = [{'course_id': 1, 'name': 'Курс №5',
+            'info': 'Your info about this course',
+            'conditions': '$Условия',
+            'content': 'Course content'},
+           {'course_id': 2, 'name': "Курс №5 кпп",
+            'info': 'Your info about this course',
+            'conditions': '$Условия',
+            'content': 'Course content'},
+           {'course_id': 3, 'name': 'Курс №1',
+            'info': 'Your info about this course',
+            'conditions': '$Условия',
+            'content': 'Course content'},
+           {'course_id': 4, 'name': 'Курс №2',
+            'info': 'Your info about this course',
+            'conditions': '$Условия',
+            'content': 'Course content'}]
 
-lessons = [{'lesson_id': 1, 'name': 'Вступление', 'material_type': 'noslides', 'material': '<strong>Здесь</strong> будет ваш текстовый материал', 'qtp': 1},
-             {'lesson_id': 2, 'name': 'Введение', 'material_type': 'noslides',
-              'material': '<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQpIv4WGoZMl-saeFqKyO9NWRVOqHJ3Zui3-k_3dAuZKmqTdDD3-JZGrKd5CGYJ7g/embed?start=false&loop=false&delayms=3000" frameborder="0" width="150%" height="600" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>', 'qtp': 1},
-             {'lesson_id': 3, 'name': 'Общие принципы', 'material_type': 'slides', 'material': '<h5>Дополнительные пояснения</h5>', 'qtp': 1},
-             {'lesson_id': 4, 'name': 'Основы основ', 'material_type': 'noslides', 'material': '<div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" allowfullscreen></iframe></div>', 'qtp': 1},
-             {'lesson_id': 5, 'name': 'Что это собой представляет?', 'material_type': 'noslides', 'material': '<iframe src="/static/pdf/dummy.pdf" width="150%" height="800"></iframe>', 'qtp': 1},
-             {'lesson_id': 6, 'name': 'Дальнейший разбор', 'material_type': 'noslides', 'material': 'Text_sample', 'qtp': 1}
+lessons = [{'lesson_id': 1, 'name': 'Вступление',
+            'material_type': 'noslides',
+            'material': '<strong>Здесь</strong> будет ваш текстовый материал. Here will be your text material', 'qtp': 1},
+           {'lesson_id': 2, 'name': 'Введение',
+            'material_type': 'noslides',
+            'material': '<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQpIv4WGoZMl-saeFqKyO9NWRVOqHJ3Zui3-k_3dAuZKmqTdDD3-JZGrKd5CGYJ7g/embed?start=false&loop=false&delayms=3000" frameborder="0" width="150%" height="600" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>', 
+            'qtp': 1},
+           {'lesson_id': 3, 'name': 'Общие принципы',
+            'material_type': 'slides',
+            'material': '<h5>Дополнительные пояснения</h5>',
+            'qtp': 1},
+           {'lesson_id': 4, 'name': 'Основы основ',
+            'material_type': 'noslides',
+            'material': '<div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" allowfullscreen></iframe></div>', 
+            'qtp': 1},
+           {'lesson_id': 5,
+            'name': 'Что это собой представляет?',
+            'material_type': 'noslides',
+            'material': '<iframe src="/static/pdf/dummy.pdf" width="150%" height="800"></iframe>',
+            'qtp': 1},
+           {'lesson_id': 6, 'name': 'Дальнейший разбор',
+            'material_type': 'noslides',
+            'material': 'Text_sample',
+            'qtp': 1}
            ]
 
-slides = [{'slide_id': 1, 'lesson_id': 3, 'link': '/static/slides/1.jpg'}, {'slide_id': 2, 'lesson_id': 3, 'link': '/static/slides/2.jpg'},
+slides = [{'slide_id': 1, 'lesson_id': 3, 'link': '/static/slides/1.jpg'},
+          {'slide_id': 2, 'lesson_id': 3, 'link': '/static/slides/2.jpg'},
           {'slide_id': 3, 'lesson_id': 3, 'link': '/static/slides/3.jpg'}]
 
 lessons_to_courses_data = {1: [1, 2, 3, 4, 5, 6],
@@ -30,12 +60,18 @@ lessons_to_courses_data = {1: [1, 2, 3, 4, 5, 6],
                            3: [3, 4],
                            4: [1, 2]}
 
-questions = [{'question_id': 1, 'question_text': 'Test question', 'correctanswer': 'This thing', 'question_type': 'closed'},
-             {'question_id': 2, 'question_text': 'Test question #2', 'correctanswer': 'Test', 'question_type': 'open'},
-             {'question_id': 3, 'question_text': 'Test question #3', 'correctanswer': 'Yes', 'question_type': 'closed'},
-             {'question_id': 4, 'question_text': 'Test question #4', 'correctanswer': 'Answer!', 'question_type': 'closed'},
-             {'question_id': 5, 'question_text': 'Test question #5', 'correctanswer': 'Testing', 'question_type': 'closed'},
-             {'question_id': 6, 'question_text': 'Test question #6', 'correctanswer': 'No', 'question_type': 'open'}]
+questions = [{'question_id': 1, 'question_text': 'Test question',
+              'correctanswer': 'This thing', 'question_type': 'closed'},
+             {'question_id': 2, 'question_text': 'Test question #2',
+              'correctanswer': 'Test', 'question_type': 'open'},
+             {'question_id': 3, 'question_text': 'Test question #3',
+              'correctanswer': 'Yes', 'question_type': 'closed'},
+             {'question_id': 4, 'question_text': 'Test question #4',
+              'correctanswer': 'Answer!', 'question_type': 'closed'},
+             {'question_id': 5, 'question_text': 'Test question #5',
+              'correctanswer': 'Testing', 'question_type': 'closed'},
+             {'question_id': 6, 'question_text': 'Test question #6',
+              'correctanswer': 'No', 'question_type': 'open'}]
 
 answers = [{'answer_id': 1,  'answer_text': 'This thing'},
            {'answer_id': 2, 'answer_text': 'That thing'},

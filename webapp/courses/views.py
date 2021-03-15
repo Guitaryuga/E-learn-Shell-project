@@ -1,8 +1,8 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 from webapp.courses.forms import QuestionForm
 from webapp.courses.models import Course, Lesson, Question
-from webapp.user.models import User_answer
+from webapp.user.models import User, User_answer
 from webapp.courses.functions import checking_answer, get_redirect_target
 from webapp.db import db
 
@@ -30,6 +30,7 @@ def index():
 
 
 @blueprint.route("/confirmation", methods=['POST'])
+@login_required
 def process_confirm():
     page_data = request.form.to_dict()
     course_id = page_data['course_id']
@@ -39,7 +40,8 @@ def process_confirm():
     db.session.add(user)
     db.session.commit()
     flash('Вы успешно поступили на курс!', 'success')
-    return redirect(url_for('material.index'))
+    # return redirect(url_for('material.index'))
+    return redirect(get_redirect_target())
 
 
 '''
@@ -91,16 +93,18 @@ def process_writing(question_id, lesson_id):
 
 
 @blueprint.route("/course/<course_id>")
+@login_required
 def course(course_id):
-    if current_user.is_authenticated:
-        course = Course.query.get(course_id)
+    course = Course.query.get(course_id)
+    user = User.query.get(current_user.id)
+    if course in user.courses:
         return render_template('courses/course.html', course=course,
                                course_id=course_id,
                                page_title=course.name, lesson=course,
                                contents=course.content)
     else:
-        flash('Вам необходимо зарегистрироваться или войти', 'danger')
-        return redirect(url_for('material.index'))
+        flash('Сначала Вам нужно записаться на курс!', 'danger')
+        return redirect(url_for("material.index"))
 
 
 '''
@@ -109,13 +113,19 @@ def course(course_id):
 
 
 @blueprint.route("/course/<course_id>/lesson/<lesson_id>")
+@login_required
 def lesson(course_id, lesson_id):
     form = QuestionForm()
     lesson = Lesson.query.get(lesson_id)
     course = Course.query.get(course_id)
     questions = lesson.questions
     user_answer = User_answer
-    return render_template('courses/lesson.html', course=course,
-                           course_id=course_id, form=form,
-                           lesson=lesson, page_title=lesson.name,
-                           questions=questions, user_answer=user_answer)
+    user = User.query.get(current_user.id)
+    if course in user.courses:
+        return render_template('courses/lesson.html', course=course,
+                               course_id=course_id, form=form,
+                               lesson=lesson, page_title=lesson.name,
+                               questions=questions, user_answer=user_answer)
+    else:
+        flash('Сначала Вам нужно записаться на курс!', 'danger')
+        return redirect(url_for("material.index"))

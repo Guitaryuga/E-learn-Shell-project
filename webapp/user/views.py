@@ -14,7 +14,7 @@ blueprint = Blueprint('users', __name__, url_prefix='/users')
 @blueprint.route("/login")
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
+        return redirect(url_for("material.index"))
     title = "Авторизация"
     login_form = LoginForm()
     return render_template('user/signin.html', form=login_form,
@@ -23,9 +23,13 @@ def login():
 
 @blueprint.route("/logout")
 def logout():
-    logout_user()
-    flash('Вы вышли из учетной записи', 'success')
-    return redirect(url_for("material.index"))
+    if current_user.is_authenticated:
+        logout_user()
+        flash('Вы вышли из учетной записи', 'success')
+        return redirect(url_for("material.index"))
+    else:
+        flash("Вам необходимо зарегистрироваться или войти", 'danger')
+        return redirect(url_for("material.index"))
 
 
 @blueprint.route("/process-login", methods=['POST'])
@@ -38,7 +42,7 @@ def process_login():
             login_user(user)
             flash('Вы вошли на сайт', 'success')
             return redirect(url_for("material.index"))
-    flash('Неверное имя пользователя или пароль', 'danger')
+    flash('Неправильное пользователя или пароль', 'danger')
     return redirect(url_for("users.login"))
 
 
@@ -73,7 +77,7 @@ def process_reg():
     else:
         for field, errors in form.errors.items():
             for error in errors:
-                flash('Ошибка в поле "{}": - {}'.format(getattr(form, field).label.text, error))
+                flash('Ошибка в поле "{}": {}'.format(getattr(form, field).label.text, error, 'danger'))
         return redirect(url_for('users.register'))
     flash('Пожалуйста, исправьте ошибки в форме', 'danger')
     return redirect(url_for('users.register'))
@@ -89,7 +93,6 @@ def process_reg():
 def user(username):
     profile = User.query.get(current_user.id)
     courses = profile.courses
-    progress = User_answer
     title = "Профиль"
     return render_template('user/profile.html', courses=courses,
-                           page_title=title, progress=progress)
+                           page_title=title)

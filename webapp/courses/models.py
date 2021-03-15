@@ -1,4 +1,6 @@
 from webapp.db import db
+from flask_login import current_user
+from webapp.user.models import User_answer
 
 '''
 Модели для базы данных, по части курсов и входящих в них уроков,
@@ -46,6 +48,15 @@ class Lesson(db.Model):
     def __repr__(self):
         return f'Урок {self.id} {self.name}'
 
+    def passed(self):
+        if self.questions_to_pass == User_answer.query.filter(
+                                     User_answer.user_id == current_user.id,
+                                     User_answer.answer_status == 'correct',
+                                     User_answer.lesson_id == self.id).count():
+            return 'passed'
+        else:
+            return 'not passed'
+
 
 class Slide(db.Model):
     __tablename__ = 'Slide'
@@ -72,6 +83,14 @@ class Question(db.Model):
 
     def __repr__(self):
         return f'Вопрос {self.id} {self.question_text}, тип {self.question_type}'
+
+    # Не работает, если вопрос повторяется в другом уроке
+    # def answered(self):
+    #     if User_answer.query.filter(User_answer.user_id == current_user.id,
+    #                                 User_answer.answer_status == 'correct',
+    #                                 User_answer.lesson_id == Lesson.id,
+    #                                 User_answer.question_id == self.id).all():
+    #         return 'answered'
 
 
 class AnswerVariant(db.Model):
