@@ -4,6 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content="Profile page of E-Learn-Shell project">
 
     <!-- Bootstrap CSS -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
@@ -61,7 +62,7 @@
                 {% for course_name in courses %}
                 <h2>Статус</h2>
                   {% for lesson_name in course_name.lessons %}
-                      {% if lesson_name.questions_to_pass == progress.query.filter(progress.user_id == current_user.id, progress.answer_status == 'correct', progress.lesson_id == lesson_name.id).count() %}
+                      {% if lesson_name.passed() == 'passed' %}
                         <li class="list-group-item"><h5><span class="text-success">Пройден</span></h5></li>
                       {% else %}
                       <li class="list-group-item"><h5><span class='text-danger'>Не пройден</span></h5></li>

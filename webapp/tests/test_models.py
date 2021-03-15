@@ -8,6 +8,7 @@ def test_new_user(new_user):
     assert new_user.date_of_birth == '20.09.1994'
     assert new_user.phone_number == '+79841502556'
     assert new_user.role == 'user'
+    assert new_user.is_authenticated
 
 
 def test_user_answer(new_user_answer):
