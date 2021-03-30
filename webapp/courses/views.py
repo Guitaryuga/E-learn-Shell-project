@@ -49,8 +49,8 @@ def process_confirm():
 '''
 
 
-@blueprint.route("/answerchecking/<lesson_id>/<question_id>", methods=['POST'])
-def process_test(question_id, lesson_id):
+@blueprint.route("/answerchecking/<course_id>/<lesson_id>/<question_id>", methods=['POST'])
+def process_test(question_id, lesson_id, course_id):
     try:
         answer_data = request.form.to_dict()
         answer_value = answer_data['answer']
@@ -60,7 +60,7 @@ def process_test(question_id, lesson_id):
         lesson_id = correct_lesson.id
         lesson_name = correct_lesson.name
         checking_answer(correct_answer, answer_value, question_id,
-                        lesson_id, lesson_name)
+                        lesson_id, lesson_name, course_id)
         return redirect(get_redirect_target())
     except KeyError:
         flash('Необходимо выбрать вариант ответа', 'danger')
@@ -72,9 +72,9 @@ def process_test(question_id, lesson_id):
 '''
 
 
-@blueprint.route("/handwritechecking/<lesson_id>/<question_id>",
+@blueprint.route("/handwritechecking/<course_id>/<lesson_id>/<question_id>",
                  methods=['POST'])
-def process_writing(question_id, lesson_id):
+def process_writing(question_id, lesson_id, course_id):
     form = QuestionForm()
     answer_value = form.answer.data
     correct_question = Question.query.get(question_id)
@@ -83,7 +83,7 @@ def process_writing(question_id, lesson_id):
     lesson_id = correct_lesson.id
     lesson_name = correct_lesson.name
     checking_answer(correct_answer, answer_value, question_id,
-                    lesson_id, lesson_name)
+                    lesson_id, lesson_name, course_id)
     return redirect(get_redirect_target())
 
 

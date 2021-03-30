@@ -54,9 +54,9 @@ def create_app():
 
     @app.route("/test")  # тестовый роут
     def test():
-        test_sample = User.query.get(current_user.id)
+        test_sample = Lesson.query.get(1)
         test_sample2 = test_sample.courses
-        test_sample3 = 1
+        test_sample3 = test_sample.name
         return render_template('test_template.html', test_sample=test_sample,
                                test_sample2=test_sample2,
                                test_sample3=test_sample3)

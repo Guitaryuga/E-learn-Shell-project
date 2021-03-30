@@ -2,9 +2,9 @@
     <div class="col-6">
         <div class="card mt-2">
             <div class="card-body">
-                <form action="{{url_for('material.process_test', question_id = question.id, lesson_id = lesson.id)}}" method='POST'>
+                <form action="{{url_for('material.process_test', question_id = question.id, lesson_id = lesson.id, course_id = course.id)}}" method='POST'>
                     {% if user_answer.query.filter(user_answer.user_id == current_user.id, user_answer.answer_status == 'correct', 
-                       user_answer.lesson_id == lesson.id, user_answer.question_id == question.id).all() %}
+                       user_answer.lesson_id == lesson.id, user_answer.question_id == question.id, user_answer.course_id == course.id).all() %}
                         <div class="list-group mt-2">
                             <h5>{{ question.question_text }}</h5>
                                     {% for answer in question.answervariants %}

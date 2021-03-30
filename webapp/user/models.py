@@ -55,6 +55,7 @@ class User_answer(db.Model):
     lesson_name = db.Column(db.String(128))
     user_answer = db.Column(db.String(50))
     answer_status = db.Column(db.String(50))
+    course_id = db.Column(db.Integer)
 
     def __repr__(self):
         return f'Пользователь {self.user_id}, вопрос {self.question_id}, ответ {self.user_answer}'
