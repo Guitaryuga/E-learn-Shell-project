@@ -34,13 +34,14 @@ def get_redirect_target():
 
 
 def checking_answer(correct_answer, answer_value, question_id,
-                    lesson_id, lesson_name):
+                    lesson_id, lesson_name, course_id):
     if correct_answer == answer_value:
         answer_status = "correct"
         answer = User_answer(answer_status=answer_status,
                              question_id=question_id,
                              user_answer=answer_value,
                              user_id=current_user.id,
+                             course_id=course_id,
                              lesson_id=lesson_id,
                              lesson_name=lesson_name)
         db.session.add(answer)
@@ -52,6 +53,7 @@ def checking_answer(correct_answer, answer_value, question_id,
                              question_id=question_id,
                              user_answer=answer_value,
                              user_id=current_user.id,
+                             course_id=course_id,
                              lesson_id=lesson_id,
                              lesson_name=lesson_name)
         db.session.add(answer)

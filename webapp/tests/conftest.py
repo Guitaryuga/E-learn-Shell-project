@@ -48,31 +48,30 @@ def confirmation(test_client):
 
 @pytest.fixture
 def answerchecking(test_client):
-    return test_client.post('/answerchecking/1/1',
-                                data=dict(answer='This thing'),
-                                follow_redirects=True)
+    return test_client.post('/answerchecking/1/1/1',
+                            data=dict(answer='This thing'),
+                            follow_redirects=True)
 
 
 @pytest.fixture
 def wrong_answerchecking(test_client):
-    return test_client.post('/answerchecking/1/1',
-                                data=dict(answer='That thing'),
-                                follow_redirects=True)
+    return test_client.post('/answerchecking/1/1/1',
+                            data=dict(answer='That thing'),
+                            follow_redirects=True)
 
 
 @pytest.fixture
 def handwritechecking(test_client):
-    return test_client.post('/handwritechecking/1/2',
+    return test_client.post('/handwritechecking/1/1/2',
                             data=dict(answer='Test'),
                             follow_redirects=True)
 
 
 @pytest.fixture
 def wrong_handwritechecking(test_client):
-    return test_client.post('/handwritechecking/1/2',
+    return test_client.post('/handwritechecking/1/1/2',
                             data=dict(answer='NotTest'),
                             follow_redirects=True)
-
 
 
 @pytest.fixture(scope='module')

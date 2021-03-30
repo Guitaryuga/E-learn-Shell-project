@@ -27,7 +27,7 @@ class Course(db.Model):
     __tablename__ = 'Course'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    lessons = db.relationship("Lesson", secondary=lessons_to_courses)
+    lessons = db.relationship("Lesson", secondary=lessons_to_courses, backref='courses')
     info = db.Column(db.Text, nullable=True)
     conditions = db.Column(db.String(64))
     content = db.Column(db.Text, nullable=True)
@@ -42,7 +42,7 @@ class Lesson(db.Model):
     name = db.Column(db.String, nullable=False)
     material_type = db.Column(db.String, nullable=False)
     material = db.Column(db.Text, nullable=True)
-    questions = db.relationship("Question", secondary=questions_to_lessons)
+    questions = db.relationship("Question", secondary=questions_to_lessons, backref='lessons')
     questions_to_pass = db.Column(db.Integer)
 
     def __repr__(self):
@@ -89,7 +89,8 @@ class Question(db.Model):
     #     if User_answer.query.filter(User_answer.user_id == current_user.id,
     #                                 User_answer.answer_status == 'correct',
     #                                 User_answer.lesson_id == Lesson.id,
-    #                                 User_answer.question_id == self.id).all():
+    #                                 User_answer.question_id == self.id
+    #                                 User_answer.course_id).all():
     #         return 'answered'
 
 
