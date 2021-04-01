@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 webapp.db
-config.py
 test.py
 oldcode.py
 migrations
