@@ -1,7 +1,12 @@
 from flask_login import UserMixin, current_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
-from webapp.model import db
+from webapp.db import db
+
+'''
+Модели пользователя для базы данных и ответов на тесты,
+которые дает пользователь
+'''
 
 users_to_courses = db.Table('users_to_courses',
     db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
@@ -50,6 +55,7 @@ class User_answer(db.Model):
     lesson_name = db.Column(db.String(128))
     user_answer = db.Column(db.String(50))
     answer_status = db.Column(db.String(50))
+    course_id = db.Column(db.Integer)
 
     def __repr__(self):
         return f'Пользователь {self.user_id}, вопрос {self.question_id}, ответ {self.user_answer}'

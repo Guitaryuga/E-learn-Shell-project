@@ -15,6 +15,6 @@ def admin_required(func):
             return current_app.login_manager.unauthorized()
         elif not current_user.is_admin:
             flash('У вас недостаточно прав для просмотра этой страницы')
-            return redirect(url_for('index'))
+            return redirect(url_for('material.index'))
         return func(*args, **kwargs)
     return decorated_view
