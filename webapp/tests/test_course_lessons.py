@@ -14,12 +14,11 @@ def test_confirmation(test_client, login, confirmation):
 def test_confirmation_without_login(test_client, confirmation):
     """
     Тест процесса записи на курс БЕЗ авторизации, должен
-    быть редирект на главную, категория алерта - danger
+    быть редирект на главную
     """
     response = confirmation
     assert response.status_code == 200
     assert b'Sign in' in response.data
-    assert b'danger' in response.data
 
 
 def test_confirmed_course_and_lesson(test_client, login, confirmation):
@@ -57,16 +56,14 @@ def test_course_and_lesson_without_confirmation(test_client, login):
 def test_course_and_lesson_without_auth(test_client):
     """
     Тест доступа к курсу и урокам БЕЗ авторизации, должен
-    быть редирект на страницу логина, категория алерта - danger
+    быть редирект на страницу логина
     """
     course = test_client.get('/course/1', follow_redirects=True)
     assert course.status_code == 200
-    assert b'danger' in course.data
     assert b'Sign in' in course.data
 
     lesson = test_client.get('/course/1/lesson/1', follow_redirects=True)
     assert lesson.status_code == 200
-    assert b'danger' in lesson.data
     assert b'Sign in' in lesson.data
 
 
