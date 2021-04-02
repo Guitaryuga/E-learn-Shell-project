@@ -1,4 +1,4 @@
-# Python E-learn Shell project
+# Python E-learn Shell project [![Build Status](https://travis-ci.org/Guitaryuga/E-learn-Shell-project.svg?branch=main)](https://travis-ci.org/Guitaryuga/E-learn-Shell-project)
 
 ### Описание
 Данный проект представляет собой веб-приложение на flask, которое можно использовать в качестве онлайн-учебника, наполняемого своим материалом.
@@ -17,15 +17,10 @@ git clone https://github.com/Guitaryuga/E-learn-Shell-project.git
 ```
 pip install -r requirements.txt
 ```
-3. Создайте файл config.py и задайте в нем переменные:
+3. Задайте переменные окружения в .env:
 ```
-import os
-basedir = os.path.abspath(os.path.dirname(__file__))
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db')
-SECRET_KEY = "YOUR_SECRET_KEY"
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-CKEDITOR_FILE_UPLOADER = 'upload'
-UPLOADED_PATH = os.path.join(basedir, 'uploads')
+SECRET_KEY="YOUR_VERY_SECRET_KEY_TELL_NOONE"
+SQLALCHEMY_DATABASE_URI="Path to you DB"
 ```
 ### Создание и наполнение базы данных
 Выполните в консоли:
