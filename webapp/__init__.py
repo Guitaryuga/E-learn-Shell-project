@@ -71,6 +71,7 @@ def create_app():
     def uploaded_files(filename):
         path = app.config['UPLOADED_PATH']
         return send_from_directory(path, filename)
+     
 
     @app.route('/upload', methods=['POST'])
     def upload():
