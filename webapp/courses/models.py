@@ -48,11 +48,12 @@ class Lesson(db.Model):
     def __repr__(self):
         return f'Урок {self.id} {self.name}'
 
-    def passed(self):
+    def passed(self, course_id):
         if self.questions_to_pass == User_answer.query.filter(
                                      User_answer.user_id == current_user.id,
                                      User_answer.answer_status == 'correct',
-                                     User_answer.lesson_id == self.id).count():
+                                     User_answer.lesson_id == self.id,
+                                     User_answer.course_id == course_id).count():
             return 'passed'
         else:
             return 'not passed'
@@ -84,14 +85,13 @@ class Question(db.Model):
     def __repr__(self):
         return f'Вопрос {self.id} {self.question_text}, тип {self.question_type}'
 
-    # Не работает, если вопрос повторяется в другом уроке
-    # def answered(self):
-    #     if User_answer.query.filter(User_answer.user_id == current_user.id,
-    #                                 User_answer.answer_status == 'correct',
-    #                                 User_answer.lesson_id == Lesson.id,
-    #                                 User_answer.question_id == self.id
-    #                                 User_answer.course_id).all():
-    #         return 'answered'
+    def answered(self, lesson_id, course_id):
+        if User_answer.query.filter(User_answer.user_id == current_user.id,
+                                    User_answer.answer_status == 'correct',
+                                    User_answer.lesson_id == lesson_id,
+                                    User_answer.question_id == self.id,
+                                    User_answer.course_id == course_id).all():
+            return 'answered'
 
 
 class AnswerVariant(db.Model):

@@ -15,14 +15,14 @@
     {% include 'menu.html' %}
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
-        <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Данные пользователя</a>
+        <a class="nav-link active" id="personal-tab" data-bs-toggle="tab" href="#personaldata" role="tab" aria-controls="personaldata" aria-selected="true">Данные пользователя</a>
       </li>
       <li class="nav-item" role="presentation">
-        <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Прогресс по курсам</a>
+        <a class="nav-link" id="progress-tab" data-bs-toggle="tab" href="#progress" role="tab" aria-controls="progress" aria-selected="false">Прогресс по курсам</a>
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <div class="tab-pane fade show active" id="personaldata" role="tabpanel" aria-labelledby="personaldata-tab">
         <div class="row">
           <div class="col-md-5">
             <h1>Информация о пользователе</h1>
@@ -45,7 +45,7 @@
         </div>
       </div>
       </div>
-      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+      <div class="tab-pane fade" id="progress" role="tabpanel" aria-labelledby="progress-tab">
         <div class="row">
           <div class="col-md-5">
               {% for course_name in courses %}
@@ -62,7 +62,7 @@
                 {% for course_name in courses %}
                 <h2>Статус</h2>
                   {% for lesson_name in course_name.lessons %}
-                      {% if lesson_name.passed() == 'passed' %}
+                      {% if lesson_name.passed(course_name.id) == 'passed' %}
                         <li class="list-group-item"><h5><span class="text-success">Пройден</span></h5></li>
                       {% else %}
                       <li class="list-group-item"><h5><span class='text-danger'>Не пройден</span></h5></li>
@@ -74,16 +74,7 @@
           </div>
         </div>
       </div>
-    
-          
 
-          
-          
-      
-    
-  
-    
-   
     <!-- Optional JavaScript -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>
 
