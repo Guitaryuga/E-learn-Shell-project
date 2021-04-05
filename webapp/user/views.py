@@ -1,6 +1,6 @@
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from webapp.user.forms import LoginForm, RegistrationForm
+from webapp.user.forms import LoginForm, RegistrationForm, EditProfileForm
 from webapp.user.models import User
 from webapp.db import db
 
@@ -51,19 +51,12 @@ def process_login():
 '''
 
 
-@blueprint.route("/register")
+@blueprint.route("/register", methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('material.index'))
     title = "Регистрация пользователя"
     form = RegistrationForm()
-    return render_template('user/registration.html', form=form,
-                           page_title=title)
-
-
-@blueprint.route("/process-reg", methods=['POST'])
-def process_reg():
-    form = RegistrationForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('material.index'))
     if form.validate_on_submit():
         new_user = User(username=form.username.data, fio=form.fio.data,
                         company=form.company.data, position=form.position.data,
@@ -74,13 +67,12 @@ def process_reg():
         db.session.commit()
         flash('Вы успешно зарегистрировались!', 'success')
         return redirect(url_for('users.login'))
+    elif request.method == 'GET':
+        form = RegistrationForm()
     else:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash('Ошибка в поле "{}": {}'.format(getattr(form, field).label.text, error, 'danger'))
-        return redirect(url_for('users.register'))
-    flash('Пожалуйста, исправьте ошибки в форме', 'danger')
-    return redirect(url_for('users.register'))
+        flash('Пожалуйста, исправьте ошибки в форме')
+    return render_template('user/registration.html', form=form,
+                           page_title=title)
 
 
 '''
@@ -96,3 +88,31 @@ def user(username):
     title = "Профиль"
     return render_template('user/profile.html', courses=courses,
                            page_title=title)
+
+
+@blueprint.route("/profile/<username>/edit_profile", methods=['GET', 'POST'])
+@login_required
+def profile_edit(username):
+    user = User.query.get(current_user.id)
+    form = EditProfileForm(obj=user)
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.fio = form.fio.data
+        current_user.company = form.company.data
+        current_user.position = form.position.data
+        current_user.date_of_birth = form.date_of_birth.data
+        current_user.phone_number = form.phone_number.data
+        db.session.commit()
+        flash('Изменения успешно сохранены', 'success')
+        return redirect(url_for('users.user', username=current_user.username))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.fio.data = current_user.fio
+        form.company.data = current_user.company
+        form.position.data = current_user.position
+        form.date_of_birth.data = current_user.date_of_birth
+        form.phone_number.data = current_user.phone_number
+    else:
+        flash('Ошибка при редактировании данных', 'danger')
+    return render_template('user/edit_profile.html', page_title='Редактирование профиля',
+                           form=form)

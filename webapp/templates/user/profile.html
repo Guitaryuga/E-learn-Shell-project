@@ -13,6 +13,18 @@
   </head>
   <body>
     {% include 'menu.html' %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert-float" style="position: fixed; top: 60px; left: 75%; right: 0">
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %} 
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
         <a class="nav-link active" id="personal-tab" data-bs-toggle="tab" href="#personaldata" role="tab" aria-controls="personaldata" aria-selected="true">Данные пользователя</a>
@@ -34,6 +46,8 @@
                   <li class="list-group-item">Дата рождения: {{ current_user.date_of_birth }}</li>
                   <li class="list-group-item">Номер телефона: {{ current_user.phone_number }}</li>
               </ul>
+              <a class="btn btn-primary align-items-center mt-2 ms-2" href="{{ url_for('users.profile_edit', username = current_user.username) }}">Редактировать профиль</a>
+              <a class="btn btn-primary align-items-center mt-2" href="#">Изменить пароль</a>
           </div>
           <div class="col-md-5 col-md-offset-2">
             <h1>Доступные курсы</h1>
@@ -77,6 +91,14 @@
 
     <!-- Optional JavaScript -->
     <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script type="text/javascript"> 
+      setTimeout(function () { 
+
+          // Closing the alert 
+          $('.alert').alert('close'); 
+      }, 2000); 
+    </script> 
 
   </body>
 </html>

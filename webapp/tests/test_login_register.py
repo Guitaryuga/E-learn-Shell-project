@@ -71,7 +71,7 @@ def test_reg_process(test_client):
     Тест процесса регистрации, если успешно - должен быть редирект на страницу
     логина, категория алерта - success
     """
-    response = test_client.post('users/process-reg',
+    response = test_client.post('users/register',
                                 data=dict(username='anothertest@example.com',
                                           fio='Test testing test',
                                           password='example123',
@@ -93,7 +93,7 @@ def test_reg_process_invalid_email(test_client):
     быть повторный редирект на страницу регистрации,
     категрия алерта - danger
     """
-    response = test_client.post('users/process-reg',
+    response = test_client.post('users/register',
                                 data=dict(username='test@example.com',
                                           fio='Test testing test',
                                           password='example123',
@@ -115,7 +115,7 @@ def test_reg_process_invalid_fio(test_client):
     быть повторный редирект на страницу регистрации,
     категрия алерта - danger
     """
-    response = test_client.post('users/process-reg',
+    response = test_client.post('users/register',
                                 data=dict(username='anothertest@example.com',
                                           fio='Test testing',
                                           password='example123',
@@ -136,7 +136,7 @@ def test_reg_missing_data(test_client):
     должен быть повторный редирект на страницу регистрации,
     категрия алерта - danger
     """
-    response = test_client.post('users/process-reg',
+    response = test_client.post('users/register',
                                 data=dict(username='anothertest@example.com',
                                           fio='Test testing test',
                                           password='example123',
