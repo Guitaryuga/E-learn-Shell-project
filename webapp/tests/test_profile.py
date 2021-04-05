@@ -18,3 +18,25 @@ def test_profile_without_auth(test_client):
                                follow_redirects=True)
     assert response.status_code == 200
     assert b'Sign in' in response.data
+
+
+def test_profile_edit_access(test_client, login):
+    """
+    Тест доступности страницы редактирования профиля,
+    с авторизацией
+    """
+    login
+    response = test_client.get('users/profile/test@example.com/edit_profile')
+    assert response.status_code == 200
+    assert b'Edit profile' in response.data
+
+
+def test_profile_edit_without_auth(test_client):
+    """
+    Тест доступности страницы редактирования профиля,
+    БЕЗ авторизации, должен происходить редирект на страницу логина
+    """
+    response = test_client.get('users/profile/test@example.com/edit_profile',
+                               follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Sign in' in response.data

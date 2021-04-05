@@ -18,7 +18,7 @@ def test_client(scope='module'):
     with flask_app.test_client() as testing_client:
         with flask_app.app_context():
             db.create_all()
-            testing_client.post('users/process-reg',
+            testing_client.post('users/register',
                                 data=dict(username='test@example.com',
                                           fio='Test testing',
                                           password='example123',
