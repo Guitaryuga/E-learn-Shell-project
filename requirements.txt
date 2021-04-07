@@ -1,6 +1,7 @@
 alembic==1.4.3
 atomicwrites==1.4.0
 attrs==20.3.0
+blinker==1.4
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
@@ -11,6 +12,7 @@ Flask==1.1.2
 Flask-Admin==1.5.7
 Flask-CKEditor==0.4.4.1
 Flask-Login==0.5.0
+Flask-Mail==0.9.1
 Flask-Migrate==2.5.3
 flask-ngrok==0.0.25
 Flask-SQLAlchemy==2.4.4
@@ -24,6 +26,7 @@ MarkupSafe==1.1.1
 packaging==20.9
 pluggy==0.13.1
 py==1.10.0
+PyJWT==2.0.1
 pyparsing==2.4.7
 pytest==6.2.2
 python-dateutil==2.8.1
