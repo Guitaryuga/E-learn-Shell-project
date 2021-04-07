@@ -10,7 +10,11 @@ from flask_migrate import Migrate
 from webapp.db import db
 from webapp.user.models import User, User_answer
 from webapp.courses.models import Course, Lesson, Question, AnswerVariant
-from webapp.admin.custom_views import MyAdminIndexView, UserView, LessonAdmin, CourseAdmin, UserAnswerAdmin, QuestionAdmin, AnswerVariantAdmin, UploadAdmin
+from webapp.admin.custom_views import (MyAdminIndexView, UserView, LessonAdmin,
+                                       CourseAdmin, UserAnswerAdmin,
+                                       QuestionAdmin, AnswerVariantAdmin,
+                                       UploadAdmin)
+from webapp.email import mail
 
 from webapp.user.views import blueprint as user_blueprint
 from webapp.courses.views import blueprint as courses_blueprint
@@ -27,6 +31,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
+    mail.init_app(app)
     migrate = Migrate(app, db)
     ckeditor = CKEditor(app)
 
@@ -61,7 +66,6 @@ def create_app():
                                test_sample2=test_sample2,
                                test_sample3=test_sample3)
 
-
     '''
     Роуты для возможности загрузки файлов в админке
     '''
@@ -71,7 +75,7 @@ def create_app():
     def uploaded_files(filename):
         path = app.config['UPLOADED_PATH']
         return send_from_directory(path, filename)
-     
+
 
     @app.route('/upload', methods=['POST'])
     def upload():

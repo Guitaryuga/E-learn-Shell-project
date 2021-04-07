@@ -1,8 +1,9 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from webapp.user.forms import LoginForm, RegistrationForm, EditProfileForm
+from webapp.user.forms import LoginForm, RegistrationForm, EditProfileForm, ResetPasswordRequestForm, ResetPasswordForm
 from webapp.user.models import User
 from webapp.db import db
+from webapp.email import send_password_reset_email
 
 blueprint = Blueprint('users', __name__, url_prefix='/users')
 
@@ -116,3 +117,33 @@ def profile_edit(username):
         flash('Ошибка при редактировании данных', 'danger')
     return render_template('user/edit_profile.html', page_title='Редактирование профиля',
                            form=form)
+
+@blueprint.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('material.index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('На указанный адрес отправлено письмо с инструкциями', 'success')
+        return redirect(url_for('users.login'))
+    return render_template('user/reset_password_request.html',
+                           title='Reset Password', form=form)
+
+
+@blueprint.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('material.index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('material.index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Ваш пароль успешно изменен', 'success')
+        return redirect(url_for('users.login'))
+    return render_template('user/reset_password.html', form=form)

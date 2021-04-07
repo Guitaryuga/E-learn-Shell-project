@@ -1,3 +1,6 @@
+import jwt
+from time import time
+from flask import current_app
 from flask_login import UserMixin, current_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,6 +28,20 @@ class User(db.Model, UserMixin):
     phone_number = db.Column(db.String(50))
     role = db.Column(db.String(10), index=True)
     courses = db.relationship("Course", secondary=users_to_courses)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, current_app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
     @property
     def is_admin(self):
