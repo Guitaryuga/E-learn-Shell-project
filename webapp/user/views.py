@@ -1,9 +1,11 @@
+import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from webapp.user.forms import LoginForm, RegistrationForm, EditProfileForm, ResetPasswordRequestForm, ResetPasswordForm
 from webapp.user.models import User
 from webapp.db import db
-from webapp.email import send_password_reset_email
+from webapp.email import send_password_reset_email, send_confirmation_email
+from webapp.token import confirm_token
 
 blueprint = Blueprint('users', __name__, url_prefix='/users')
 
@@ -62,11 +64,13 @@ def register():
         new_user = User(username=form.username.data, fio=form.fio.data,
                         company=form.company.data, position=form.position.data,
                         date_of_birth=form.date_of_birth.data,
-                        phone_number=form.phone_number.data, role='user')
+                        phone_number=form.phone_number.data, role='user',
+                        confirmed=False)
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
-        flash('Вы успешно зарегистрировались!', 'success')
+        send_confirmation_email(new_user)
+        flash('Вы успешно зарегистрировались!Вам на почту отправлено письмо для подтверждения аккаунта', 'success')
         return redirect(url_for('users.login'))
     elif request.method == 'GET':
         form = RegistrationForm()
@@ -74,6 +78,31 @@ def register():
         flash('Пожалуйста, исправьте ошибки в форме')
     return render_template('user/registration.html', form=form,
                            page_title=title)
+
+
+@blueprint.route("/confirm/<token>")
+def confirm_email(token):
+    try:
+        email = confirm_token(token)
+    except:
+        flash('Ссылка для подтверждения неактивна', 'danger')
+    user = User.query.filter_by(username=email).first_or_404()
+    if user.confirmed:
+        flash('Аккаунт уже подтвержден', 'success')
+    else:
+        user.confirmed = True
+        user.confirmed_on = datetime.datetime.now()
+        db.session.commit()
+        flash('Вы успешно подтвердили аккаунт, спасибо!', 'success')
+    return redirect(url_for('users.login'))
+
+
+@blueprint.route("/resend")
+@login_required
+def resend_confirmation():
+    send_confirmation_email(current_user)
+    flash('Вам на почту отправлено письмо для подтверждения аккаунта', 'success')
+    return redirect(url_for('material.index'))
 
 
 '''
@@ -120,8 +149,6 @@ def profile_edit(username):
 
 @blueprint.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
-    if current_user.is_authenticated:
-        return redirect(url_for('material.index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.email.data).first()
@@ -130,13 +157,11 @@ def reset_password_request():
         flash('На указанный адрес отправлено письмо с инструкциями', 'success')
         return redirect(url_for('users.login'))
     return render_template('user/reset_password_request.html',
-                           title='Reset Password', form=form)
+                           title='Сброс пароля', form=form)
 
 
 @blueprint.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    if current_user.is_authenticated:
-        return redirect(url_for('material.index'))
     user = User.verify_reset_password_token(token)
     if not user:
         return redirect(url_for('material.index'))

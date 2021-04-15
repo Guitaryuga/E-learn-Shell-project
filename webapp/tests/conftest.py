@@ -8,28 +8,33 @@ from webapp.database import extracting_data
 
 @pytest.fixture
 def test_client(scope='module'):
-    flask_app = create_app()
-    flask_app.config['LOGIN_DISABLED'] = False
-    flask_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
-    flask_app.config['BCRYPT_LOG_ROUNDS'] = 4
-    flask_app.config['TESTING'] = True
-    flask_app.config['WTF_CSRF_ENABLED'] = False
+    flask_app = create_app({'TESTING': True})
 
     with flask_app.test_client() as testing_client:
         with flask_app.app_context():
             db.create_all()
-            testing_client.post('users/register',
-                                data=dict(username='test@example.com',
-                                          fio='Test testing',
-                                          password='example123',
-                                          password2='example123',
-                                          company='T.E.S.T',
-                                          position='Manager',
-                                          date_of_birth='10.01.1984',
-                                          phone_number='+70000000000',
-                                          role='user'))
             extracting_data()
             yield testing_client  # this is where the testing happens!
+
+
+@pytest.fixture
+def register(test_client):
+    return test_client.post('users/register',
+                            data=dict(username='anothertest@example.com',
+                                      fio='Test testing test',
+                                      password='example123',
+                                      password2='example123',
+                                      company='T.E.S.T',
+                                      position='Manager',
+                                      date_of_birth='10.01.1984',
+                                      phone_number='+70000000000'),
+                            follow_redirects=True)
+
+                 
+@pytest.fixture
+def user():
+    user = User.query.get(1)
+    return user
 
 
 @pytest.fixture
@@ -80,7 +85,7 @@ def new_user():
                 fio='Patrick Kennedy', password='FlaskIsAwesome',
                 company='VIP', position='CEO',
                 date_of_birth='20.09.1994', phone_number='+79841502556',
-                role='user')
+                role='user', confirmed=1)
     return user
 
 

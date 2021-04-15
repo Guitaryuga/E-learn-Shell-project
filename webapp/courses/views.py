@@ -2,6 +2,7 @@ from flask import Blueprint, flash, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 from webapp.courses.forms import QuestionForm
 from webapp.courses.models import Course, Lesson, Question
+from webapp.decorators import check_confirmed
 from webapp.user.models import User, User_answer
 from webapp.courses.functions import checking_answer, get_redirect_target
 from webapp.db import db
@@ -31,7 +32,9 @@ def index():
 
 @blueprint.route("/confirmation", methods=['POST'])
 @login_required
+@check_confirmed  # вызывает ошибки в тестах
 def process_confirm():
+    # if current_user.confirmed:
     page_data = request.form.to_dict()
     course_id = page_data['course_id']
     course = Course.query.get(course_id)
@@ -40,8 +43,10 @@ def process_confirm():
     db.session.add(user)
     db.session.commit()
     flash('Вы успешно поступили на курс!', 'success')
-    # return redirect(url_for('material.index'))
     return redirect(get_redirect_target())
+    # else:
+    #     flash('Пожалуйста, подтвердите аккаунт!', 'danger')
+    #     return redirect(get_redirect_target())
 
 
 '''

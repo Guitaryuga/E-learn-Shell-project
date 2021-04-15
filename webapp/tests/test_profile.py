@@ -2,7 +2,6 @@ def test_profile(test_client, login):
     """
     Тест доступности профиля с авторизованным пользователем
     """
-    login
     response = test_client.get('users/profile/test@example.com')
     assert response.status_code == 200
     assert b'Profile page' in response.data
@@ -25,7 +24,6 @@ def test_profile_edit_access(test_client, login):
     Тест доступности страницы редактирования профиля,
     с авторизацией
     """
-    login
     response = test_client.get('users/profile/test@example.com/edit_profile')
     assert response.status_code == 200
     assert b'Edit profile' in response.data

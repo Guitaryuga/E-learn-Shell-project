@@ -6,10 +6,14 @@ load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+LOGIN_DISABLED = False
+SQLALCHEMY_DATABASE_URI = "sqlite://"
+BCRYPT_LOG_ROUNDS = 4
+WTF_CSRF_ENABLED = False
+TESTING = True
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = os.getenv('SECRET_KEY')
 SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
-SQLALCHEMY_TRACK_MODIFICATIONS = False
 CKEDITOR_FILE_UPLOADER = 'upload'
 UPLOADED_PATH = os.path.join(basedir, 'uploads')
 MAIL_SERVER = os.getenv('MAIL_SERVER')

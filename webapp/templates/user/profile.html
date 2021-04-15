@@ -16,7 +16,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert-float" style="position: fixed; top: 60px; left: 75%; right: 0">
+          <div class="alert-float" style="position: fixed; top: 0; left: 33%; right: 33%">
             <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
               {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -47,15 +47,20 @@
                   <li class="list-group-item">Номер телефона: {{ current_user.phone_number }}</li>
               </ul>
               <a class="btn btn-primary align-items-center mt-2 ms-2" href="{{ url_for('users.profile_edit', username = current_user.username) }}">Редактировать профиль</a>
-              <a class="btn btn-primary align-items-center mt-2" href="#">Изменить пароль</a>
+              <a class="btn btn-primary align-items-center mt-2" href="{{ url_for('users.reset_password_request') }}">Изменить пароль</a>
           </div>
           <div class="col-md-5 col-md-offset-2">
             <h1>Доступные курсы</h1>
-            <div class="list-group">
-                {% for course_name in courses %}
-                <a href="{{url_for('material.course', course_id = course_name.id)}}" class="list-group-item list-group-item-action ">{{ course_name.name }}</a>
-                {% endfor %}
-            </div>
+            {% if current_user.confirmed %}
+              <div class="list-group">
+                  {% for course_name in courses %}
+                  <a href="{{url_for('material.course', course_id = course_name.id)}}" class="list-group-item list-group-item-action ">{{ course_name.name }}</a>
+                  {% endfor %}
+              </div>
+            {% else %}
+              <h5>Для записи на курс необходим подтвержденный аккаунт. Не получили письмо?</h5>
+                <p><a class="btn btn-primary" href="{{ url_for('users.resend_confirmation') }}">Отправить снова</a></p>
+            {% endif %}
         </div>
       </div>
       </div>

@@ -23,7 +23,6 @@ def test_login_page_with_auth(test_client, login):
     авторизованному пользователю: должен
     быть редирект на Index page
     """
-    login
     response = test_client.get('/users/login', follow_redirects=True)
     assert response.status_code == 200
     assert b'Index page' in response.data
@@ -44,7 +43,6 @@ def test_register_page_with_auth(test_client, login):
     акторизованному пользователю: должен быть редирект
     на Index page
     """
-    login
     response = test_client.get('/users/register', follow_redirects=True)
     assert response.status_code == 200
     assert b'Index page' in response.data

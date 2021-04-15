@@ -27,9 +27,12 @@ path = op.join(op.dirname(__file__), 'uploads')
 '''
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config.from_pyfile('config.py')
+    if test_config is None:
+        app.config.from_pyfile('config.py')
+    else:
+        app.config.from_pyfile('test_config.py')
     db.init_app(app)
     mail.init_app(app)
     migrate = Migrate(app, db)
