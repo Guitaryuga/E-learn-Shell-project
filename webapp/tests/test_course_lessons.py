@@ -1,17 +1,16 @@
-def test_confirmation(test_client, login, confirmation):
+def test_confirmation(test_client, login, confirmation, user):
     """
     Тест процесса записи на курс: стоит защита от подмены
-    ссылки на редирект, категория появляющего алерта - success
+    ссылки на редирект, категория появляющегося алерта - success
     """
-    login
-    confirmation
     response = test_client.get('/')
     assert response.status_code == 200
     assert b'success' in response.data
     assert b'Index page' in response.data
+    assert user.courses != []
 
 
-def test_confirmation_without_login(test_client, confirmation):
+def test_confirmation_without_login(test_client, confirmation, user):
     """
     Тест процесса записи на курс БЕЗ авторизации, должен
     быть редирект на главную
@@ -19,14 +18,13 @@ def test_confirmation_without_login(test_client, confirmation):
     response = confirmation
     assert response.status_code == 200
     assert b'Sign in' in response.data
+    assert user.courses == []
 
 
 def test_confirmed_course_and_lesson(test_client, login, confirmation):
     """
     Тест на доступ к курсу и уроку после логина и записи
     """
-    login
-    confirmation
     course = test_client.get('/course/1', follow_redirects=True)
     assert course.status_code == 200
     assert b'Main course' in course.data
@@ -41,7 +39,6 @@ def test_course_and_lesson_without_confirmation(test_client, login):
     """
     Тест доступа к курсу и урокам после логина но БЕЗ записи
     """
-    login
     course = test_client.get('/course/1', follow_redirects=True)
     assert course.status_code == 200
     assert b'Index page' in course.data
@@ -74,8 +71,6 @@ def test_not_confirmed_another_course_and_lesson(test_client, login,
     не записывался, но авторизован, должен быть редирект на главную
     страницу, категория алерта - danger
     """
-    login
-    confirmation
     course = test_client.get('/course/2', follow_redirects=True)
     assert course.status_code == 200
     assert b'Index page' in course.data
@@ -91,8 +86,6 @@ def test_different_lessons(test_client, login, confirmation):
     """
     Тест доступа к разным урокам и различным типам материала в них
     """
-    login
-    confirmation
     lesson_1 = test_client.get('/course/1/lesson/1', follow_redirects=True)
     assert lesson_1.status_code == 200
     assert b'Main course' in lesson_1.data

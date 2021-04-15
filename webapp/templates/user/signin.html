@@ -19,7 +19,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert-float" style="position: fixed; top: 0; left: 35%; right: 35%">
+                    <div class="alert-float" style="position: fixed; top: 60px; left: 75%; right: 0">
                         <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                             {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -62,7 +62,7 @@
   
             // Closing the alert 
             $('.alert').alert('close'); 
-        }, 2000); 
+        }, 4000); 
     </script> 
 
     

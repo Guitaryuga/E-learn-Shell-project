@@ -21,15 +21,26 @@
             <h5 class="modal-title" id="confirmModal">Подтверждение записи на курс</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-            Вы уверены, что хотите записаться на {{ modal.name }}?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-              <form action="{{ url_for('material.process_confirm') }}" method='POST'>
-                <button class='btn btn-primary' name="course_id" value="{{ modal.id }}" type="submit">Поступить на курс</button>
-              </form>
-          </div>
+          {% if current_user.confirmed %}
+            <div class="modal-body">
+              Вы уверены, что хотите записаться на {{ modal.name }}?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <form action="{{ url_for('material.process_confirm') }}" method='POST'>
+                  <button class='btn btn-primary' name="course_id" value="{{ modal.id }}" type="submit">Поступить на курс</button>
+                </form>
+            </div>
+          {% else %}
+            <div class="modal-body">
+              <p>Для того, чтобы получить возможность записаться на курс, Вам необходимо подтвердить ваш аккаунт.
+              Проверьте свой почтовый ящик(спам в том числе).</p> <p>Если письмо со ссылкой для подтверждения аккаунта не пришло,
+                Вы можете запросить его отправку потворно со страницы своего профиля.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>

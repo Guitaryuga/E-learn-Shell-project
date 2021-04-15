@@ -1,5 +1,6 @@
 from webapp.db import db
 from webapp.courses.models import lessons_to_courses, Course, Lesson, Slide, Question, AnswerVariant
+from webapp.user.models import User
 
 
 """
@@ -98,6 +99,16 @@ answers_to_questions = {1: [1, 2, 3, 4],
 
 questions_to_lessons = {1: [1], 2: [2], 3: [3], 4: [4], 5: [5], 6: [6]}
 
+users = [{'username': 'test@example.com',
+          'fio': 'Test testing',
+          'password': 'example123',
+          'company': 'T.E.S.T',
+          'position': 'Manager',
+          'date_of_birth': '10.01.1984',
+          'phone_number': '+70000000000',
+          'role': 'user',
+          'confirmed': 1}]
+
 
 def extracting_data():
     for check_answer in answers:
@@ -114,6 +125,19 @@ def extracting_data():
 
     for check_slide in slides:
         save_slides(**check_slide)
+
+    for check_user in users:
+        save_users(**check_user)
+
+
+def save_users(username, fio, password, company, position, date_of_birth, phone_number, role, confirmed):
+    new_user = User(username=username, fio=fio,
+                    company=company, position=position,
+                    date_of_birth=date_of_birth, phone_number=phone_number,
+                    role=role, confirmed=confirmed)
+    new_user.set_password(password)
+    db.session.add(new_user)
+    db.session.commit()
 
 
 def save_courses(course_id, name, info, conditions, content):

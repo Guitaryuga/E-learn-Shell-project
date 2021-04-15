@@ -47,7 +47,6 @@ def test_logout(test_client, login):
     должен быть редирект на Index page,
     категория алерта - success
     """
-    login
     response = test_client.get('users/logout', follow_redirects=True)
     assert response.status_code == 200
     assert b'Index page' in response.data
@@ -79,8 +78,8 @@ def test_reg_process(test_client):
                                           company='T.E.S.T',
                                           position='Manager',
                                           date_of_birth='10.01.1984',
-                                          phone_number='+70000000000',
-                                          role='user'), follow_redirects=True)
+                                          phone_number='+70000000000'),
+                                follow_redirects=True)
     assert response.status_code == 200
     assert b'Sign in' in response.data
     assert b'success' in response.data
@@ -101,8 +100,7 @@ def test_reg_process_invalid_email(test_client):
                                           company='T.E.S.T',
                                           position='Manager',
                                           date_of_birth='10.01.1984',
-                                          phone_number='+70000000000',
-                                          role='user'), follow_redirects=True)
+                                          phone_number='+70000000000'))
     assert response.status_code == 200
     assert b'Sign up' in response.data
     assert b'danger' in response.data
@@ -123,8 +121,7 @@ def test_reg_process_invalid_fio(test_client):
                                           company='T.E.S.T',
                                           position='Manager',
                                           date_of_birth='10.01.1984',
-                                          phone_number='+70000000000',
-                                          role='user'), follow_redirects=True)
+                                          phone_number='+70000000000'))
     assert response.status_code == 200
     assert b'Sign up' in response.data
     assert b'danger' in response.data
@@ -141,8 +138,8 @@ def test_reg_missing_data(test_client):
                                           fio='Test testing test',
                                           password='example123',
                                           company='T.E.S.T',
-                                          phone_number='+70000000000',
-                                          role='user'), follow_redirects=True)
+                                          phone_number='+70000000000'),
+                                follow_redirects=True)
     assert response.status_code == 200
     assert b'Sign up' in response.data
     assert b'danger' in response.data

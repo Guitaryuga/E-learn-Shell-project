@@ -28,6 +28,8 @@ class User(db.Model, UserMixin):
     phone_number = db.Column(db.String(50))
     role = db.Column(db.String(10), index=True)
     courses = db.relationship("Course", secondary=users_to_courses)
+    confirmed = db.Column(db.Boolean)
+    confirmed_on = db.Column(db.DateTime)
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(

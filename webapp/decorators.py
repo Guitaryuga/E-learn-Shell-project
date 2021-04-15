@@ -18,3 +18,13 @@ def admin_required(func):
             return redirect(url_for('material.index'))
         return func(*args, **kwargs)
     return decorated_view
+
+
+def check_confirmed(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if current_user.confirmed is False:
+            flash('Пожалуйста, подтвердите аккаунт!', 'danger')
+            return redirect(url_for('material.index'))
+        return func(*args, **kwargs)
+    return decorated_function
