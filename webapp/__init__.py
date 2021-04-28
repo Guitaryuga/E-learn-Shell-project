@@ -62,23 +62,19 @@ def create_app(test_config=None):
 
     @app.route("/test")  # тестовый роут
     def test():
-        test_sample = Lesson.query.get(1)
-        test_sample2 = test_sample.courses
+        test_sample = Lesson.query.all()
+        test_sample2 = 1
         test_sample3 = current_user.username
         return render_template('test_template.html', test_sample=test_sample,
                                test_sample2=test_sample2,
                                test_sample3=test_sample3)
 
-    '''
-    Роуты для возможности загрузки файлов в админке
-    '''
-
+    """Роуты для возможности загрузки файлов в админке"""
 
     @app.route('/uploads/<filename>')
     def uploaded_files(filename):
         path = app.config['UPLOADED_PATH']
         return send_from_directory(path, filename)
-
 
     @app.route('/upload', methods=['POST'])
     def upload():

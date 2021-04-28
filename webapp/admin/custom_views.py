@@ -5,9 +5,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_ckeditor import CKEditorField
 
-'''
-Спец.вьюшки для отдельных разделов админки
-'''
+'''Спец.вьюшки для отдельных разделов админки'''
 
 
 class MyAdminIndexView(AdminIndexView):
