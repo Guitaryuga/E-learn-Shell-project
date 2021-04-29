@@ -1,22 +1,22 @@
 import jwt
 from time import time
 from flask import current_app
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from webapp.db import db
 
-'''
-Модели пользователя для базы данных и ответов на тесты,
-которые дает пользователь
-'''
+"""Модели пользователя для базы данных и ответов на тесты,
+которые дает пользователь"""
+
 
 users_to_courses = db.Table('users_to_courses',
-    db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('User.id')))
+                            db.Column('course_id', db.Integer, db.ForeignKey('Course.id')),
+                            db.Column('user_id', db.Integer, db.ForeignKey('User.id')))
 
 
 class User(db.Model, UserMixin):
+    """Модель пользователя"""
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -32,12 +32,14 @@ class User(db.Model, UserMixin):
     confirmed_on = db.Column(db.DateTime)
 
     def get_reset_password_token(self, expires_in=600):
+        """Метод генерирующий токен для сброса пароля пользователя"""
         return jwt.encode(
             {'reset_password': self.id, 'exp': time() + expires_in},
             current_app.config['SECRET_KEY'], algorithm='HS256')
 
     @staticmethod
     def verify_reset_password_token(token):
+        """Метод, проверяющий сгенерированный токен для сброса пароля"""
         try:
             id = jwt.decode(token, current_app.config['SECRET_KEY'],
                             algorithms=['HS256'])['reset_password']
@@ -47,12 +49,15 @@ class User(db.Model, UserMixin):
 
     @property
     def is_admin(self):
+        """Метод, проверяющий пользвоателя на принадлежность к классу администраторов"""
         return self.role == 'admin'
 
     def set_password(self, password):
+        """Метод, хеширующий пароль для хранения в БД"""
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
+        """Метод, проверяющий пароль на соответствие при логине"""
         return check_password_hash(self.password, password)
 
     def __repr__(self):
@@ -60,6 +65,7 @@ class User(db.Model, UserMixin):
 
 
 class User_answer(db.Model):
+    """Модель хранения ответов, данных пользователем"""
     __tablename__ = 'User_answer'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('User.id',

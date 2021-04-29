@@ -10,8 +10,12 @@ from webapp.db import db
 blueprint = Blueprint('material', __name__)
 
 
+"""Роуты и функции, относящиеся к разделу курсов, их содержанию и доступу"""
+
+
 @blueprint.route("/")
 def index():
+    """Главная страница"""
     all_courses = Course.query.all()
     title = "Список курсов"
     if current_user.is_authenticated:

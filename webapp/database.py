@@ -3,8 +3,7 @@ from webapp.courses.models import lessons_to_courses, Course, Lesson, Slide, Que
 from webapp.user.models import User
 
 
-"""
-Здесь описана база данных в виде питоновских словарей. Далее идут функции,
+"""Здесь описана база данных в виде питоновских словарей. Далее идут функции,
 которые вносят данные в db с помощью get_all_courses.
 """
 
@@ -111,6 +110,7 @@ users = [{'username': 'test@example.com',
 
 
 def extracting_data():
+    """Функция записи информации из словарей в БД"""
     for check_answer in answers:
         save_answers(**check_answer)
 
@@ -131,6 +131,7 @@ def extracting_data():
 
 
 def save_users(username, fio, password, company, position, date_of_birth, phone_number, role, confirmed):
+    """Функция записи информации из словаря users в БД """
     new_user = User(username=username, fio=fio,
                     company=company, position=position,
                     date_of_birth=date_of_birth, phone_number=phone_number,
@@ -141,6 +142,11 @@ def save_users(username, fio, password, company, position, date_of_birth, phone_
 
 
 def save_courses(course_id, name, info, conditions, content):
+    """Функция записи из словаря courses в БД
+
+    Если курс уже существует, то он не будет записан, параллельно
+    записывается принадлежность уроков из lessons_to_courses_data.
+    """
     courses_exists = Course.query.filter(Course.name == name).count()
     if not courses_exists:
         new_course = Course(id=course_id, name=name, info=info,
@@ -157,6 +163,10 @@ def save_courses(course_id, name, info, conditions, content):
 
 
 def save_lessons(lesson_id, name, material_type, material, qtp):
+    """Функция записи из словаря lessons в БД
+
+    Если урок уже существует, то он не будет записан.
+    """
     lessons_exists = Lesson.query.filter(Lesson.name == name).count()
     if not lessons_exists:
         new_lessons = Lesson(id=lesson_id, name=name,
@@ -168,6 +178,10 @@ def save_lessons(lesson_id, name, material_type, material, qtp):
 
 
 def save_answers(answer_id, answer_text):
+    """Функция записи из словаря answers в БД
+
+    Если ответ уже существует, то он не будет записан.
+    """
     answers_exists = AnswerVariant.query.filter(AnswerVariant.answer_text == answer_text).count()
     if not answers_exists:
         new_answers = AnswerVariant(id=answer_id, answer_text=answer_text)
@@ -176,6 +190,10 @@ def save_answers(answer_id, answer_text):
 
 
 def save_questions(question_id, question_text, correctanswer, question_type):
+    """Функция записи из словаря questions в БД
+
+    Если вопрос уже существует, то он не будет записан.
+    """
     questions_exists = Question.query.filter(Question.question_text == question_text).count()
     if not questions_exists:
         new_question = Question(id=question_id, question_text=question_text,
@@ -187,6 +205,10 @@ def save_questions(question_id, question_text, correctanswer, question_type):
 
 
 def save_slides(slide_id, lesson_id, link):
+    """Функция записи из словаря slides в БД
+
+    Если слайд уже существует, то он не будет записан.
+    """
     slides_exists = Slide.query.filter(Slide.link == link).count()
     if not slides_exists:
         new_slide = Slide(id=slide_id, lesson_id=lesson_id, link=link)

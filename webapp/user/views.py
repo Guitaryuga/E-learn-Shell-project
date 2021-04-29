@@ -9,13 +9,16 @@ from webapp.token import confirm_token
 
 blueprint = Blueprint('users', __name__, url_prefix='/users')
 
-'''
-Вход-выход пользователя
-'''
+"""Роуты и функции, относящиеся к пользователю"""
 
 
 @blueprint.route("/login")
 def login():
+    """Страница логина
+
+    Если пользователь уже в системе, то его
+    перенаправит на главную страницу.
+    """
     if current_user.is_authenticated:
         return redirect(url_for("material.index"))
     title = "Авторизация"
@@ -26,6 +29,13 @@ def login():
 
 @blueprint.route("/logout")
 def logout():
+    """Функция логаута
+
+    Если пользователь в зашел в систему, то он выйдет из нее,
+    его перенаправит на главную страницу с оповещением о выходе.
+    При попытке перейти на эту страницу неавторизованному пользователю,
+    будет редирект на главную с оповещением.
+    """
     if current_user.is_authenticated:
         logout_user()
         flash('Вы вышли из учетной записи', 'success')
@@ -37,6 +47,11 @@ def logout():
 
 @blueprint.route("/process-login", methods=['POST'])
 def process_login():
+    """Функция процесса логина
+
+    Если форма логина проходит валидацию, то пользователь входит в систему,
+    его перенаправляет на главную страницу с оповещением.
+    """
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -49,13 +64,15 @@ def process_login():
     return redirect(url_for("users.login"))
 
 
-'''
-Процесс регистрации пользователя
-'''
-
-
 @blueprint.route("/register", methods=['GET', 'POST'])
 def register():
+    """Функция регистрации пользователя
+
+    Если пользователь уже авторизован в системе,
+    то при попытке попасть на страницу его перенаправит на главную.
+    Если форма регистрации проходит валидацию, то указанные данные
+    пользователя вносятся в БД и его переадресовывает на страницу логина
+    """
     title = "Регистрация пользователя"
     form = RegistrationForm()
     if current_user.is_authenticated:
@@ -82,6 +99,12 @@ def register():
 
 @blueprint.route("/confirm/<token>")
 def confirm_email(token):
+    """Функция подтверждения аккаунта
+
+    Ссылка формируется с помощью токена для подтвреждения аккаунта,
+    который втраивается в ссылку п письме для подтверждения аккаунта
+    пользователя. Ссылка активна и действительна опр.количество времени.
+    """
     try:
         email = confirm_token(token)
     except:
@@ -100,19 +123,18 @@ def confirm_email(token):
 @blueprint.route("/resend")
 @login_required
 def resend_confirmation():
+    """Функция повторной отправки письма
+    пользователю для подтвеждения аккаунта
+    """
     send_confirmation_email(current_user)
     flash('Вам на почту отправлено письмо для подтверждения аккаунта', 'success')
     return redirect(url_for('material.index'))
 
 
-'''
-Профиль пользователя
-'''
-
-
 @blueprint.route("/profile/<username>")
 @login_required
 def user(username):
+    """Страница профиля пользователя"""
     profile = User.query.get(current_user.id)
     courses = profile.courses
     title = "Профиль"
@@ -123,6 +145,13 @@ def user(username):
 @blueprint.route("/profile/<username>/edit_profile", methods=['GET', 'POST'])
 @login_required
 def profile_edit(username):
+    """Страница редактирования данных пользователя
+
+    При переходе из профиля, пользователь попадает на страницу
+    с формой, поля которой заполнены текущей информацией о нём.
+    Её можно изменить по своему желанию и усмотрению, но с условием,
+    что электронная почта и ФИО являются уникальными.
+    """
     user = User.query.get(current_user.id)
     form = EditProfileForm(obj=user)
     if form.validate_on_submit():
@@ -147,8 +176,16 @@ def profile_edit(username):
     return render_template('user/edit_profile.html', page_title='Редактирование профиля',
                            form=form)
 
+
 @blueprint.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
+    """Страница с функцией запроса сброса пароля
+
+    Ползователь вносит свой e-mail в форму и если форма проходит валидацию,
+    то ему на почту приходит ссылка на страницу для сброса пароля.
+    Если адреса нет в БД(пользователь не был зарегистрирован), то
+    письмо не будет отправлено и появится предупреждение.
+    """
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.email.data).first()
@@ -162,6 +199,14 @@ def reset_password_request():
 
 @blueprint.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
+    """Страница для сброса пароля и установления нового
+
+    Пользователь переходит по ссылке присланной ему в письме,
+    и если токен для сброса проходит верификацию, то попадает на 
+    страницу с формой для смены пароля. Если смена пароля проходит
+    успешно, происходит перенаправление на страницу логина и оповещение
+    о смене пароля.
+    """
     user = User.verify_reset_password_token(token)
     if not user:
         return redirect(url_for('material.index'))
