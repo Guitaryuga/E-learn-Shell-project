@@ -7,6 +7,8 @@ from webapp.user.models import User
 
 app = create_app()
 
+"""Создание первого пользователя, администратора"""
+
 with app.app_context():
     username = input('Введите имя пользователя: ')
 
