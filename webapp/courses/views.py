@@ -10,8 +10,12 @@ from webapp.db import db
 blueprint = Blueprint('material', __name__)
 
 
+"""Роуты и функции, относящиеся к разделу курсов, их содержанию и доступу"""
+
+
 @blueprint.route("/")
 def index():
+    """Главная страница"""
     all_courses = Course.query.all()
     title = "Список курсов"
     if current_user.is_authenticated:
@@ -25,16 +29,15 @@ def index():
                                all_courses=all_courses)
 
 
-'''
-Процесс подтверждения записи на курс
-'''
-
-
 @blueprint.route("/confirmation", methods=['POST'])
 @login_required
-@check_confirmed  # вызывает ошибки в тестах
+@check_confirmed
 def process_confirm():
-    # if current_user.confirmed:
+    """Процесс подтверждения записи на курс
+
+    Функция вносит запрашиваемый курс в
+    many-to-many таблицу users_to_courses
+    """
     page_data = request.form.to_dict()
     course_id = page_data['course_id']
     course = Course.query.get(course_id)
@@ -44,18 +47,16 @@ def process_confirm():
     db.session.commit()
     flash('Вы успешно поступили на курс!', 'success')
     return redirect(get_redirect_target())
-    # else:
-    #     flash('Пожалуйста, подтвердите аккаунт!', 'danger')
-    #     return redirect(get_redirect_target())
-
-
-'''
-Проверка правильности выбора правильного варианта ответа
-'''
 
 
 @blueprint.route("/answerchecking/<course_id>/<lesson_id>/<question_id>", methods=['POST'])
 def process_test(question_id, lesson_id, course_id):
+    """Проверка правильности ВЫБОРА правильного варианта ответа
+
+    Функция собирает данные для проверки правильности
+    ответа на вопрос в определенном уроке и курсе и передает их в функцию
+    checking_answer.
+    """
     try:
         answer_data = request.form.to_dict()
         answer_value = answer_data['answer']
@@ -80,6 +81,12 @@ def process_test(question_id, lesson_id, course_id):
 @blueprint.route("/handwritechecking/<course_id>/<lesson_id>/<question_id>",
                  methods=['POST'])
 def process_writing(question_id, lesson_id, course_id):
+    """Проверка правильности ВВЕДЕННОГО ответа
+
+    Функция собирает данные для проверки правильности
+    ответа на вопрос в определенном уроке и курсе и передает их в функцию
+    checking_answer.
+    """
     form = QuestionForm()
     answer_value = form.answer.data
     correct_question = Question.query.get(question_id)
@@ -92,14 +99,10 @@ def process_writing(question_id, lesson_id, course_id):
     return redirect(get_redirect_target())
 
 
-'''
-Путь к курсам
-'''
-
-
 @blueprint.route("/course/<course_id>")
 @login_required
 def course(course_id):
+    """Путь в запрашиваемому курсу"""
     course = Course.query.get(course_id)
     user = User.query.get(current_user.id)
     if course in user.courses:
@@ -112,14 +115,10 @@ def course(course_id):
         return redirect(url_for("material.index"))
 
 
-'''
-Путь к урокам в курсах
-'''
-
-
 @blueprint.route("/course/<course_id>/lesson/<lesson_id>")
 @login_required
 def lesson(course_id, lesson_id):
+    """Путь к запрашиваемым урокам в курсах"""
     form = QuestionForm()
     lesson = Lesson.query.get(lesson_id)
     course = Course.query.get(course_id)

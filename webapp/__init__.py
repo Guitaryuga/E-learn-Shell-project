@@ -22,9 +22,7 @@ from webapp.courses.views import blueprint as courses_blueprint
 path = op.join(op.dirname(__file__), 'uploads')
 
 
-'''
-Приложение, параметры, блюпринты и вьюшки
-'''
+"""Приложение, параметры, блюпринты и вьюшки"""
 
 
 def create_app(test_config=None):
@@ -62,26 +60,29 @@ def create_app(test_config=None):
 
     @app.route("/test")  # тестовый роут
     def test():
-        test_sample = Lesson.query.get(1)
-        test_sample2 = test_sample.courses
+        test_sample = Lesson.query.all()
+        test_sample2 = 1
         test_sample3 = current_user.username
         return render_template('test_template.html', test_sample=test_sample,
                                test_sample2=test_sample2,
                                test_sample3=test_sample3)
 
-    '''
-    Роуты для возможности загрузки файлов в админке
-    '''
-
+    """Роуты для возможности загрузки файлов в админке"""
 
     @app.route('/uploads/<filename>')
     def uploaded_files(filename):
+        """Путь к загруженному файлу"""
         path = app.config['UPLOADED_PATH']
         return send_from_directory(path, filename)
 
-
     @app.route('/upload', methods=['POST'])
     def upload():
+        """Функция загрузки файла на сервер
+
+        Запрос на получение загружаемых файлов,
+        проверка расширения, сохранение в заданной
+        конфигурацией папке, формирование URL файла.
+        """
         f = request.files.get('upload')
         extension = f.filename.split('.')[-1].lower()
         if extension not in ['jpg', 'gif', 'png', 'jpeg']:

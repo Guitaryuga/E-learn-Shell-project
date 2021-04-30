@@ -4,7 +4,11 @@ from flask import current_app, flash, request, redirect, url_for
 from flask_login import config, current_user
 
 
+"""Декораторы для различных уровней доступа и проверок"""
+
+
 def admin_required(func):
+    """Декоратор доступа пользователей только со статусом администратора"""
     @wraps(func)
     def decorated_view(*args, **kwargs):
         if request.method in config.EXEMPT_METHODS:
@@ -21,6 +25,8 @@ def admin_required(func):
 
 
 def check_confirmed(func):
+    """Декоратор доступа только для пользователей,
+    подвтердивших свой электронный адрес"""
     @wraps(func)
     def decorated_function(*args, **kwargs):
         if current_user.confirmed is False:

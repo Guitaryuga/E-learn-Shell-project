@@ -5,12 +5,11 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_ckeditor import CKEditorField
 
-'''
-Спец.вьюшки для отдельных разделов админки
-'''
+"""Спец.вьюшки для отдельных разделов админки"""
 
 
 class MyAdminIndexView(AdminIndexView):
+    """Класс для доступа к админ-панели только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -24,6 +23,7 @@ class MyAdminIndexView(AdminIndexView):
 
 
 class UserView(ModelView):
+    """Класс для доступа к учетным записям пользователей только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -39,6 +39,7 @@ class UserView(ModelView):
 
 
 class LessonAdmin(ModelView):
+    """Класс для доступа к редактированию материала уроков только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -50,12 +51,14 @@ class LessonAdmin(ModelView):
         flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
         return redirect(url_for('material.index', next=request.url))
 
+    """Изменение форм редактирования на формы с подключенным CKEditor"""
     form_overrides = dict(material=CKEditorField)
     create_template = 'edit.html'
     edit_template = 'edit.html'
 
 
 class CourseAdmin(ModelView):
+    """Класс для доступа к редактированию материала курсов только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -67,12 +70,14 @@ class CourseAdmin(ModelView):
         flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
         return redirect(url_for('material.index', next=request.url))
 
+    """Изменение форм редактирования на формы с подключенным CKEditor"""
     form_overrides = dict(info=CKEditorField, content=CKEditorField)
     create_template = 'edit.html'
     edit_template = 'edit.html'
 
 
 class UserAnswerAdmin(ModelView):
+    """Класс для доступа к ответам на вопросы курсов пользователей только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -86,6 +91,7 @@ class UserAnswerAdmin(ModelView):
 
 
 class QuestionAdmin(ModelView):
+    """Класс для доступа к вопросам в курсах только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -99,6 +105,7 @@ class QuestionAdmin(ModelView):
 
 
 class AnswerVariantAdmin(ModelView):
+    """Класс для доступа к варинатам ответа для формирования тестов только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin
@@ -112,6 +119,7 @@ class AnswerVariantAdmin(ModelView):
 
 
 class UploadAdmin(FileAdmin):
+    """Класс для доступа странице загрузки файлов только для администраторов"""
     def is_accessible(self):
         try:
             return current_user.is_admin

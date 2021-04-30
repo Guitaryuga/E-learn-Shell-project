@@ -5,12 +5,11 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 from webapp.user.models import User
 
-'''
-Формы для логина и регистрации пользователей
-'''
+"""Формы для логина и регистрации пользователей"""
 
 
 class LoginForm(FlaskForm):
+    """Форма логина"""
     username = StringField('Логин или e-mail',
                            validators=[DataRequired()],
                            render_kw={"class": "form-control",
@@ -27,6 +26,7 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
+    """Феорма регистрации"""
     username = StringField('E-mail',
                            validators=[DataRequired(), Email()],
                            render_kw={"class": "form-control"})
@@ -55,17 +55,20 @@ class RegistrationForm(FlaskForm):
                          render_kw={"class": "w-100 btn btn-lg btn-primary"})
 
     def validate_username(self, username):
+        """Метод провереяет уникальность username"""
         users_count = User.query.filter_by(username=username.data).count()
         if users_count > 0:
             raise ValidationError('Пользователь с такой электронной почтой уже зарегистрирован')
 
     def validate_fio(self, fio):
+        """Метод проверяет уникальность Ф.И.О"""
         users_count = User.query.filter_by(fio=fio.data).count()
         if users_count > 0:
             raise ValidationError('Пользователь с таким именем уже зарегистрирован')
 
 
 class EditProfileForm(FlaskForm):
+    """Форма редактрования личных данных пользователя"""
     username = StringField('E-mail',
                            validators=[DataRequired(), Email()],
                            render_kw={"class": "form-control"})
@@ -88,6 +91,7 @@ class EditProfileForm(FlaskForm):
                          render_kw={"class": "w-100 btn btn-lg btn-primary"})
 
     def validate_username(self, username):
+        """Метод проверяет уникальность электронной почты пользователя"""
         users_count = User.query.filter_by(username=username.data).count()
         current = current_user.username
         if users_count > 0 and current != username.data:
@@ -95,6 +99,7 @@ class EditProfileForm(FlaskForm):
 
 
 class ResetPasswordRequestForm(FlaskForm):
+    """Форма запроса сброса пароля пользователя"""
     email = StringField('Адрес электронной почты',
                         validators=[DataRequired(), Email()],
                         render_kw={"class": "form-control",
@@ -103,12 +108,14 @@ class ResetPasswordRequestForm(FlaskForm):
                          render_kw={"class": "w-100 btn btn-lg btn-primary"})
 
     def validate_email(self, email):
+        """Метод проверяет существование электронной почты в БД при запросе сброса пароля"""
         existing_email = User.query.filter_by(username=email.data).count()
         if existing_email == 0:
             raise ValidationError('Пользователя с такой электронной почтой не существует')
 
 
 class ResetPasswordForm(FlaskForm):
+    """Форма смены пароля пользователя"""
     password = PasswordField('Новый пароль',
                              validators=[DataRequired()],
                              render_kw={"class": "form-control"})
