@@ -20,6 +20,7 @@ pip install -r requirements.txt
 ```
 SECRET_KEY="YOUR_VERY_SECRET_KEY_TELL_NOONE"
 SQLALCHEMY_DATABASE_URI="Path to you DB"
+SECURITY_PASSWORD_SALT="YOUR_SALT"
 
 Если необходима работа модуля Flask-Mail, то также задайте:
 MAIL_SERVER=your_mail_server
