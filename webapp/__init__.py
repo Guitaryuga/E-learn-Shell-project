@@ -13,7 +13,7 @@ from webapp.courses.models import Course, Lesson, Question, AnswerVariant
 from webapp.admin.custom_views import (MyAdminIndexView, UserView, LessonAdmin,
                                        CourseAdmin, UserAnswerAdmin,
                                        QuestionAdmin, AnswerVariantAdmin,
-                                       UploadAdmin)
+                                       UploadAdmin, MainIndexLink)
 from webapp.email import mail
 
 from webapp.user.views import blueprint as user_blueprint
@@ -31,6 +31,8 @@ def create_app(test_config=None):
         app.config.from_pyfile('config.py')
     else:
         app.config.from_pyfile('test_config.py')
+    app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
+    app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
     db.init_app(app)
     mail.init_app(app)
     migrate = Migrate(app, db)
@@ -45,6 +47,7 @@ def create_app(test_config=None):
     admin.add_view(QuestionAdmin(Question, db.session))
     admin.add_view(AnswerVariantAdmin(AnswerVariant, db.session))
     admin.add_view(UploadAdmin(path, '/uploads/', name='Upload images'))
+    admin.add_link(MainIndexLink(name='Main Website'))
 
     app.register_blueprint(user_blueprint)
     app.register_blueprint(courses_blueprint)
