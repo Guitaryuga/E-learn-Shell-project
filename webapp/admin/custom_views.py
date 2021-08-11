@@ -3,6 +3,7 @@ from flask_login import current_user
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.menu import MenuLink
 from flask_ckeditor import CKEditorField
 
 """Спец.вьюшки для отдельных разделов админки"""
@@ -130,3 +131,9 @@ class UploadAdmin(FileAdmin):
     def inaccessible_callback(self, name, **kwargs):
         flash("У вас недостаточно прав для просмотра этой страницы", 'danger')
         return redirect(url_for('material.index', next=request.url))
+
+
+class MainIndexLink(MenuLink):
+    "Ссылка на основное приложение в верхней панели админки"
+    def get_url(self):
+        return url_for("material.index")
