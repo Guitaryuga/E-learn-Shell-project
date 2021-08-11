@@ -52,6 +52,6 @@ def send_confirmation_email(new_user):
     """
     token = generate_confirmation_token(new_user.username)
     send_email('[E-Learn-Shell] Подтверждение аккаунта',
-               sender=current_app.config['ADMINS'][0],
+               sender=current_app.config['ADMINS'],
                recipients=[new_user.username],
                html_body=render_template('email/activate.html', token=token, new_user=new_user))
