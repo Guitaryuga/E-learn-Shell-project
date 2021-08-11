@@ -36,5 +36,11 @@ jobs:
         SECRET_KEY: Very_secret_key
         SQLALCHEMY_DATABASE_URI: sqlite:///
         SECURITY_PASSWORD_SALT: saltysaltysalt1108
+        ADMINS: ${{ secrets.ADMINS }}
+        MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+        MAIL_PORT: ${{ secrets.MAIL_PORT }}
+        MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+        MAIL_USE_TLS: ${{ secrets.MAIL_USE_TLS }}
       run: |
         pytest
